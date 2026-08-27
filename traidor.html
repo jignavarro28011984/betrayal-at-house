@@ -32,7 +32,6 @@
             min-height: 100vh;
         }
 
-        /* PANEL DE NAVEGACIÓN Superior */
         .grimoire-control {
             background: rgba(13, 7, 5, 0.95);
             border: 2px solid var(--gold-accent);
@@ -84,7 +83,6 @@
             margin: 4px 0;
         }
 
-        /* CONTENEDOR DE LIBRO */
         .book-container {
             width: 100%;
             max-width: 500px;
@@ -101,7 +99,6 @@
             justify-content: space-between;
         }
 
-        /* PORTADA ANTI-SPOILER SOBREPUESTA */
         .spoiler-cover {
             position: absolute;
             top: 0;
@@ -158,7 +155,6 @@
             transform: scale(0.97);
         }
 
-        /* CABECERA DE LA PÁGINA REVELADA */
         .page-header {
             text-align: center;
             border-bottom: 2px solid var(--ink-black);
@@ -184,7 +180,6 @@
             text-transform: uppercase;
         }
 
-        /* SECCIONES INDEPENDIENTES DE ALTO CONTRASTE */
         .section-card {
             background: var(--parchment-card);
             border: 1.5px solid var(--border-dark);
@@ -252,36 +247,29 @@
 <body>
 
     <div class="grimoire-control">
-        <!-- CRUCE HABITACIÓN / PRESAGIO -->
         <div class="select-group">
             <label for="room-select">🏛️ Habitación del Presagio</label>
             <select id="room-select" onchange="calcularCruce()">
-                <!-- Opciones cargadas dinámicamente -->
             </select>
         </div>
 
         <div class="select-group">
             <label for="omen-select">🔮 Presagio Revelado</label>
             <select id="omen-select" onchange="calcularCruce()">
-                <!-- Opciones cargadas dinámicamente -->
             </select>
         </div>
 
         <div class="divider"></div>
 
-        <!-- SELECCIÓN DIRECTA -->
         <div class="select-group">
             <label for="haunt-select">📜 O Seleccionar Escenario Directo</label>
             <select id="haunt-select" onchange="seleccionarEscenarioDirecto(this.value)">
-                <!-- Opciones cargadas dinámicamente -->
             </select>
         </div>
     </div>
 
-    <!-- PÁGINA PRINCIPAL DEL LIBRO -->
     <div class="book-container">
         
-        <!-- TAPADERA DE SEGURIDAD ANTI-SPOILERS -->
         <div id="spoiler-cover" class="spoiler-cover">
             <div style="font-size: 30px; margin-bottom: 10px;">🗡️</div>
             <div class="spoiler-title" id="cover-title">ESCENARIO #1</div>
@@ -289,7 +277,6 @@
             <button class="btn-reveal" onclick="revelarFolio()">👁️ Revelar Tomo</button>
         </div>
 
-        <!-- CONTENIDO DETALLADO -->
         <div>
             <div class="page-header">
                 <div class="book-tag">Tomo del Traidor • Secreto</div>
@@ -335,7 +322,6 @@
     </div>
 
 <script>
-    // 1. MATRIZ DE CRUCE (ROOM VS OMEN)
     const HAUNT_MATRIX = {
         "Abandoned Room": { "Bite": 18, "Book": 7, "Crystal Ball": 12, "Dog": 38, "Girl": 1, "Holy Symbol": 9, "Madman": 45, "Mask": 42, "Medallion": 49, "Ring": 28, "Skull": 34, "Spear": 43, "Spirit Board": 48 },
         "Balcony": { "Bite": 24, "Book": 7, "Crystal Ball": 32, "Dog": 5, "Girl": 16, "Holy Symbol": 6, "Madman": 11, "Mask": 25, "Medallion": 49, "Ring": 20, "Skull": 47, "Spear": 39, "Spirit Board": 2 },
@@ -352,7 +338,22 @@
         "Servants' Quarters": { "Bite": 35, "Book": 29, "Crystal Ball": 12, "Dog": 5, "Girl": 30, "Holy Symbol": 9, "Madman": 31, "Mask": 42, "Medallion": 21, "Ring": 28, "Skull": 34, "Spear": 15, "Spirit Board": 8 }
     };
 
-    // 2. REGLAS DE SELECCIÓN DEL TRAIDOR (1 AL 50)
+    const OMEN_TRANSLATIONS = {
+        "Bite": "Mordedura (Bite)",
+        "Book": "Libro (Book)",
+        "Crystal Ball": "Bola de Cristal (Crystal Ball)",
+        "Dog": "Perro (Dog)",
+        "Girl": "Muchacha (Girl)",
+        "Holy Symbol": "Símbolo Sagrado (Holy Symbol)",
+        "Madman": "El Loco (Madman)",
+        "Mask": "Máscara (Mask)",
+        "Medallion": "Medallón (Medallion)",
+        "Ring": "Anillo (Ring)",
+        "Skull": "Calavera (Skull)",
+        "Spear": "Lanza (Spear)",
+        "Spirit Board": "Tabla de Espiritismo (Spirit Board)"
+    };
+
     const TRAITOR_RULES_TEXT = {
         1: "El revelador del escenario es el Traidor.",
         2: "El revelador del escenario es el Traidor.",
@@ -406,58 +407,12 @@
         50: "Ninguno."
     };
 
-    // 3. BASE DE DATOS DEL TOMO DEL TRAIDOR (1 AL 50)
     const traitorHaunts = {
         1: { title: "Haunt #1: La Momia Camina", goal: "La Momia es guardiana de la Muchacha, tiene el Anillo o el Símbolo Santo y vuelve con ellos al Sarcófago; o cuando todos los héroes estén muertos.", setup: "Coloca la señal de Momia y Sarcófago. Pon la ficha de Muchacha en la misma planta a mínimo 5 habitaciones.", know: "Intentan devolver de nuevo a la Momia a la tierra de los muertos.", actions: "Si saca 0 o 1 al moverse, usa pasadizos secretos para ir a cualquier espacio.", monsters: "<b>La Momia:</b> Inmune a ataques de Velocidad. Inflige daño de Velocidad hasta el mínimo, luego Fuerza." },
         2: { title: "Haunt #2: La Sesión de Espiritismo", goal: "Todos los héroes están muertos, independientemente de quién invoque al Fantasma primero.", setup: "Aparta la ficha de Fantasma. Si el Pentagrama no está, colócalo a 5 cuartos.", know: "Intentan convocar al Fantasma antes que tú para ganar control.", actions: "Realiza tiradas de Conocimiento o Cordura (5+). Al ganar, la casa colapsa por habitaciones.", monsters: "<b>El Fantasma (Vel: 4, Cor: 6):</b> Atraviesa paredes y zonas derrumbadas. Ataque mental." },
         3: { title: "Haunt #3: Estofado de Ancas de Rana", goal: "Todos los héroes están muertos o han sido convertidos en Ranas.", setup: "Ficha de Bruja en Hall de Entrada. Coloca fichas Raíz en Invernadero, Despensa y Cocina.", know: "Tienen el Libro de Hechizos de la Bruja para quitarle la invulnerabilidad.", actions: "Hechizos: <i>Piel de Rana</i>, <i>Aliento de Dragón</i> o <i>Alas de Cuervo</i>.", monsters: "<b>La Bruja (Vel: 4, Fue: 3, Cor: 6):</b> Invulnerable.<br><b>El Gato (Vel: 3, Fue: 3, Cor: 2):</b> Devora ranas sueltas." },
         4: { title: "Haunt #4: La Telaraña del Destino", goal: "Los huevos de la Araña se incuban en el turno 9 o todos los héroes están muertos.", setup: "Pon la Araña sobre el explorador con Mordedura. Usa un contador de turnos.", know: "El revelador está atrapado en la telaraña y no puede moverse.", actions: "Avanza el contador al final de tu turno. No ataques al revelador salvo que destruyan los huevos.", monsters: "<b>Araña Gigante:</b> Debe avanzar a héroes no atrapados. Repite dados blancos en ataque." },
-        5: { title: "Haunt #5: Licántropo Adolescente", goal: "Todos los héroes están muertos o se han transformado en Hombres Lobo.", setup: "Transforma tu ficha en Lobo. Restaura y sube atributos según número de héroes.", know: "Eres demasiado lobuno para recordar detalles de sus planes.", actions: "Ganas +1 Fuerza y +1 Velocidad por turno.", monsters: "<b>Hombre Lobo / Perro (Vel: 6, Fue: 4, Cor: 3):</b> Infecta con Cordura 4+. Daño reducido a la mitad." },
-        6: { title: "Haunt #6: El Ojo Flotante", goal: "Todos los Héroes están muertos o han sido llevados al interior de la nave espacial.", setup: "Coloca 1-2 Aliens y la Nave Espacial en la habitación del Presagio.", know: "Intentan evitar ser abducidos y liberar el control mental.", actions: "Aliens atacan con Cordura a todos en la sala. Al vencer, los dominan hacia la nave.", monsters: "<b>Aliens (Vel: 4, Fue: 6, Cor: 6):</b> Inmunes a ataques de Velocidad." },
-        7: { title: "Haunt #7: Hiedra Carnívora", goal: "Todos los héroes están muertos o el objeto especial creado por los supervivientes ha sido destruido.", setup: "Coloca pares de fichas de Raíz y Punta en las habitaciones de enredadera.", know: "Crean un Spray especial. Debes robárselo y tirarlo al Abismo, Horno o Lago.", actions: "Mueve la Punta para atrapar y arrastrar exploradores a la Raíz.", monsters: "<b>Trepadora / Punta (Vel: 2, Fue: 5, Cor: 3):</b> Elimina héroes al llegar a la Raíz." },
-        8: { title: "Haunt #8: El Gemido de la Banshee", goal: "Todos los héroes están muertos.", setup: "Pon la señal de Banshee en tu habitación.", know: "Ellos planean realizar un ritual para silenciar a la Banshee.", actions: "Mueve a la Banshee según la tabla de dados (deslizamiento/dirección).", monsters: "<b>La Banshee (Vel: 8):</b> Inmune a ataques. Daño mental severo en área con su gemido." },
-        9: { title: "Haunt #9: La Danza de la Muerte", goal: "El Símbolo Sagrado ha sido destruido en el Abismo, Horno o Lago.", setup: "Cualquiera se transforma al perder la Cordura. Restaura tus stats.", know: "Intentan detener la música del violín.", actions: "Tira Fuerza 3+ para moverte. Atacas con Velocidad vs Velocidad.", monsters: "<b>Traidor / Bailarines:</b> Al hacer 2+ de daño con Velocidad, robas un objeto." },
-        10: { title: "Haunt #10: Ampliando la Familia", goal: "Todos los héroes están muertos.", setup: "Zombis en estancias con Presagio. El Loco reemplaza tu figura eliminada.", know: "Intentan atrapar Zombis en estancias clave.", actions: "Mueve los zombis hacia la línea de visión más cercana.", monsters: "<b>Zombis (Vel: 2, Fue: 6, Cor: 2, Con: 3)</b><br><b>El Loco (Vel: 3, Fue: 5, Cor: 5):</b> Aguanta 5 daños." },
-        11: { title: "Haunt #11: No les Dejes Entrar", goal: "Todos los héroes están muertos o se abren suficientes aberturas para invadir la casa.", setup: "Coloca fichas de Espectro en estancias con ventanas o salidas.", know: "Buscan realizar exorcismos en estancias sagradas o con libros.", actions: "Comanda a los Espectros para que bloqueen accesos e interfieran rituales.", monsters: "<b>Espectros:</b> Inmunes a ataques físicos normales salvo con Anillo." },
-        12: { title: "Haunt #12: Masas de Carne Andantes", goal: "Eliminar a la contraparte original de cada Gemelo Diabólico.", setup: "Crea Gemelos Diabólicos en la Entrada para cada jugador.", know: "Los héroes necesitan la Bola de Cristal para matarlos definitivamente.", actions: "Coordina a los Gemelos para perseguir a su héroe asignado.", monsters: "<b>Gemelos Diabólicos:</b> Copian atributos iniciales del héroe asignado." },
-        13: { title: "Haunt #13: Tal Vez Soñar", goal: "Escape de un número de Pesadillas o muerte de los héroes antes de que despierten al Soñador.", setup: "Coloca la figura del Soñador y fichas de Pesadilla.", know: "Usan el Símbolo Sagrado en la habitación del Soñador para despertarlo.", actions: "Genera y mueve Pesadillas hacia los exploradores.", monsters: "<b>Pesadillas:</b> Realizan ataques mentales que reducen Cordura directamente." },
-        14: { title: "Haunt #14: Las Estrellas lo Saben", goal: "Completar el sacrificio llevando un cadáver o profecía a la Cámara Pentagrama.", setup: "Posiciona Cultistas cerca de la Cámara Pentagrama.", know: "Los héroes intentan verter pintura en el Pentagrama para profanarlo.", actions: "Arrastra cadáveres de héroes o ítems clave hacia el altar.", monsters: "<b>Cultistas:</b> Atacan en grupo para proteger la zona del ritual." },
-        15: { title: "Haunt #15: Aquí hay Dragones", goal: "Eliminar a todos los héroes con el Dragón antes de que consigan el equipo legendario.", setup: "Coloca la figura del Dragón en el Sótano.", know: "Buscan el Escudo, la Armadura y la Lanza para dañar al Dragón.", actions: "Utiliza el Aliento de Fuego en área o ataques de morder.", monsters: "<b>El Dragón:</b> Puntos de vida masivos y ataques de área de alto impacto." },
-        16: { title: "Haunt #16: El Abrazo del Fantasma", goal: "Retener a La Chica y detonar la bomba o eliminar a los héroes.", setup: "Ubica al Fantasma reteniendo a La Chica en el Sótano.", know: "Intentan derrotar al Fantasma para liberar a La Chica y desactivar la bomba.", actions: "Si el Fantasma es atacado, huye con La Chica a otra habitación del Sótano.", monsters: "<b>Fantasma Guardián:</b> Movimiento rápido en estancias subterráneas." },
-        17: { title: "Haunt #17: Bichos", goal: "Destruir los ingredientes del insecticida o eliminar a todos los héroes.", setup: "Despliega los Bichos Gigantes en la casa.", know: "Buscan 3 ingredientes para sintetizar el Spray de Insecticida en la Cocina.", actions: "Coordina a los Bichos para atacar en grupo o interceptar ingredientes.", monsters: "<b>Bichos Gigantes:</b> Atacan coordinadamente reduciendo el paso de héroes." },
-        18: { title: "Haunt #18: Los Retoños", goal: "Expandir las Esporas Tóxicas y eliminar a los exploradores.", setup: "Coloca la Planta Diabólica y esporas en habitaciones adyacentes.", know: "Buscan la Flor de Lavanda para quemar a la Planta Diabólica.", actions: "Aumenta la presencia de esporas para bloquear pasillos.", monsters: "<b>Planta Diabólica:</b> Inmune hasta recibir el efecto de la Lavanda." },
-        19: { title: "Haunt #19: El Señor de las Bestias", goal: "Eliminar a los héroes manteniendo el control de la Lanza y tus bestias.", setup: "Equipa la Lanza y despliega esbirros animales.", know: "Intentan desarmarte con ataques especiales en lugar de matarte.", actions: "Ordena a los animales rodear y atacar a héroes aislados.", monsters: "<b>Señor de las Bestias (Tú) / Esbirros Animales:</b> Potencia de ataque coordinado." },
-        20: { title: "Haunt #20: La Novia Fantasma", goal: "Evitar que el cadáver del novio sea llevado a la Capilla con el Anillo.", setup: "Despliega la Novia Fantasma en la planta principal.", know: "Buscan desenterrar el cuerpo en la Cripta y llevarlo a la Capilla.", actions: "Intercepta al héroe que lleva el cadáver o el Anillo.", monsters: "<b>Novia Fantasma:</b> Inmune a ataques normales de Fuerza." },
-        21: { title: "Haunt #21: La Casa de los Muertos Vivientes", goal: "Infectar o eliminar a todos los exploradores con la horda zombi.", setup: "Despliega al Señor de los Zombis y la horda inicial.", know: "Buscan Dinamita o el Medallón para destruir al Señor de los Zombis.", actions: "Convierte a los héroes caídos en nuevos zombis bajo tu mando.", monsters: "<b>Señor Zombi / Zombis:</b> Inmunes a armas de fuego convencionales." },
-        22: { title: "Haunt #22: El Abismo Devuelve la Mirada", goal: "Hacer colapsar la casa hacia el Abismo antes del exorcismo.", setup: "Comienza la secuencia de colapso desde las habitaciones exteriores.", know: "Realizan tiradas de exorcismo en estancias sagradas o de conocimiento.", actions: "Elige las habitaciones que se hunden hacia el vacío cada turno.", monsters: "<b>El Abismo:</b> Provoca caídas directas al vacío a quienes fallen Velocidad." },
-        23: { title: "Haunt #23: El Horror Tentaculado", goal: "Arrastrar a los exploradores a la raíz con los tentáculos.", setup: "Coloca la cabeza del monstruo y extiende sus tentáculos.", know: "Intentan usar la Bola de Cristal para ubicar la cabeza y usar Dinamita.", actions: "Usa las puntas de los tentáculos para agarrar y arrastrar héroes.", monsters: "<b>Tentáculos:</b> Eliminación instantánea si llegan a la raíz." },
-        24: { title: "Haunt #24: Vuela de Vuelta a Casa", goal: "Avanzar el enjambre de murciélagos y abrumar a los supervivientes.", setup: "Despliega fichas de enjambre de murciélagos.", know: "Intentan usar el Órgano para emitir frecuencias que ahuyenten al enjambre.", actions: "Pega murciélagos a los exploradores para infligir daño continuo.", monsters: "<b>Murciélagos:</b> Daño automático al inicio del turno del héroe infectado." },
-        25: { title: "Haunt #25: Muñecos Vudú", goal: "Mutilar o eliminar a los héroes usando sus muñecos vudú.", setup: "Oculta las fichas de Muñecos Vudú en habitaciones secretas.", know: "Intentan escuchar pistas para encontrar sus respectivos muñecos y destruirlos.", actions: "Activa los muñecos para infligir estados alterados o daño directo.", monsters: "<b>Traidor Vudú:</b> Inflige daño a distancia mediante los muñecos." },
-        26: { title: "Haunt #26: Sufre las Consecuencias", goal: "Alcanzar la Cámara Pentagrama con las Ratas para volverte invulnerable.", setup: "Despliega la plaga de ratas y avanza hacia el Pentagrama.", know: "Intentan eliminar a todas las ratas antes de que llegues al altar.", actions: "Mueve la plaga bloqueando el paso de los exploradores.", monsters: "<b>Plaga de Ratas:</b> Múltiples unidades con movimiento rápido." },
-        27: { title: "Haunt #27: Carne Enloquecida", goal: "Expandir la Masa de Carne hasta cubrir la mansión.", setup: "Coloca el contador inicial de la Masa de Carne.", know: "Buscan ingredientes en la casa para crear la fórmula química que la destruya.", actions: "Duplica el tamaño de la Masa; convierte a quien entre en su casilla.", monsters: "<b>La Masa:</b> Crecimiento exponencial e invulnerable a ataques normales." },
-        28: { title: "Haunt #28: El Anillo del Rey Salomón", goal: "Derrotar a los héroes antes de que usen el Anillo contra el Señor Demonio.", setup: "Invoca al Señor Demonio y demonios menores.", know: "El portador del Anillo puede controlar demonios o dañarlos severamente.", actions: "Ataca agresivamente al portador del Anillo para quitárselo.", monsters: "<b>Señor Demonio:</b> Requiere dos impactos para ser eliminado definitivamente." },
-        29: { title: "Haunt #29: El Legado de Frankenstein", goal: "Eliminar a los héroes con la masa muscular del Monstruo de Frankenstein.", setup: "Despliega al Monstruo de Frankenstein.", know: "Intentan encender Antorchas o empujar al Monstruo al Abismo.", actions: "Avanza en línea recta hacia el héroe más cercano.", monsters: "<b>Frankenstein:</b> Fuerza descomunal e inmune a daño físico menor." },
-        30: { title: "Haunt #30: La Tumba de Drácula", goal: "Eliminar a todos los héroes antes del amanecer.", setup: "Despliega a Drácula y a la Novia Vampiro.", know: "Buscan la Lanza o ganar tiempo hasta que salga el sol.", actions: "Ataca desde las sombras y usa habilidades de regeneración.", monsters: "<b>Vampiros:</b> Pierden facultades paulatinamente si sale el sol." },
-        31: { title: "Haunt #31: El Pájaro de Mal Agüero", goal: "Completar el contador de infortunio con el Pájaro Maldito.", setup: "Coloca al Pájaro Maldito en la Torre.", know: "Intentan capturarlo o ahuyentarlo en la Torre mediante Conocimiento.", actions: "Desata eventos trágicos e infortunios sobre toda la casa.", monsters: "<b>Pájaro Maldito:</b> Difícil de impactar sin armas a distancia." },
-        32: { title: "Haunt #32: La Caza Salvaje", goal: "Eliminar a los héroes durante la cacería espectral.", setup: "Despliega al líder de la cacería y sabuesos espectrales.", know: "Intentan atraerte a la Capilla para destruir el cuerno de invocación.", actions: "Carga rápidamente por pasillos largos contra los exploradores.", monsters: "<b>Cazadores Espectrales:</b> Alta movilidad y bono de carga." },
-        33: { title: "Haunt #33: El Fantasma de la Ópera", goal: "Hacer sonar la partitura maldita en el Órgano hasta enloquecer a los héroes.", setup: "Ubica la Partitura Maldita en la Habitación del Órgano.", know: "Usan el Libro o Bola de Cristal para descifrar y quemar la partitura.", actions: "Toca el Órgano para emitir ondas de daño a la Cordura.", monsters: "<b>Fantasma de la Ópera:</b> Se desvanece tras realizar ataques sonoros." },
-        34: { title: "Haunt #34: El Rito de Iniciación", goal: "Completar la iniciación sacrificando a los neófitos.", setup: "Despliega a los 3 neófitos en las habitaciones de profecía.", know: "Intentan eliminar a los neófitos y romper sus amuletos.", actions: "Protege a los neófitos usando hechizos de parálisis.", monsters: "<b>Sectarios Clave:</b> Armados con dagas ceremoniales." },
-        35: { title: "Haunt #35: La Casa del Horror", goal: "Dominar las 4 habitaciones principales con la entidad mística.", setup: "Marca la Cocina, Dormitorio, Biblioteca y Cripta.", know: "Usan el Símbolo Sagrado para purificar las habitaciones dominadas.", actions: "Cierra puertas y provoca derrumbes de techos sobre los héroes.", monsters: "<b>La Mansión (Entidad):</b> Ataca usando el entorno de la casa." },
-        36: { title: "Haunt #36: El Titiritero", goal: "Tomar control de los héroes como marionetas y hacer que se destruyan.", setup: "Ubica al Titiritero en el Ático o Salón de Juegos.", know: "Buscan Tijeras o el Hacha para cortar los hilos del Titiritero.", actions: "Toma el control de las figuras de los héroes durante sus turnos.", monsters: "<b>El Titiritero:</b> Ataca indirectamente usando a los héroes controlados." },
-        37: { title: "Haunt #37: La Dimensión Desconocida", goal: "Desestabilizar la realidad mediante brechas interdimensionales.", setup: "Abre portales en las habitaciones con profecía.", know: "Usan el Amuleto para cerrar las brechas con Conocimiento 5+.", actions: "Altera los atributos de los héroes al azar cuando cruzan un portal.", monsters: "<b>Entidades Interdimensionales:</b> Aparecen de forma impredecible." },
-        38: { title: "Haunt #38: El Horror del Espejo", goal: "Duplicar a los héroes mediante espejos malditos y eliminarlos.", setup: "Coloca espejos malditos en Dormitorios y Comedor.", know: "Usan armas de Fuerza para romper los espejos.", actions: "Engendra copias oscuras desde los espejos no destruidos.", monsters: "<b>Sombras del Espejo:</b> Copian el nivel de ataque de su versión original." },
-        39: { title: "Haunt #39: La Maldición de la Momia", goal: "Proteger el Vaso Canopo y aplastar a los intrusos.", setup: "Coloca el Vaso Canopo junto al Sarcófago de la Momia.", know: "Buscan el Vaso Canopo para romperlo con una tirada de Conocimiento 6+.", actions: "Avanza de forma imparable reduciendo Fuerza y Velocidad.", monsters: "<b>Momia Real:</b> Inmune a armas de fuego." },
-        40: { title: "Haunt #40: El Enjambre", goal: "Proteger las colmenas demoníacas en Invernadero y Jardines.", setup: "Coloca nidos de enjambres en estancias exteriores.", know: "Usan Spray de Plantas o Antorchas para quemar las colmenas.", actions: "Envía enjambres voladores para cegar y dañar continuamente.", monsters: "<b>Enjambre:</b> Reduce la visibilidad y ataca de forma constante." },
-        41: { title: "Haunt #41: La Invocación del Mal", goal: "Mantener el altar de la Cámara Pentagrama hasta abrir el portal.", setup: "Protege el Altar en la Cámara Pentagrama.", know: "Buscan Daga Sacrificial o Dinamita para volar el altar por los aires.", actions: "Invocas entidades demoníacas menores para hacer muro defensivo.", monsters: "<b>Guardianes Infernales:</b> Bloquean la entrada al altar." },
-        42: { title: "Haunt #42: El Secreto del Sótano", goal: "Inundar el sótano por completo y ahogar a los exploradores.", setup: "Inicia el nivel de agua en el piso inferior.", know: "Intentan activar la bomba de drenaje en el Horno o Laboratorio.", actions: "Inunda habitaciones reduciendo la Velocidad de quienes estén dentro.", monsters: "<b>Agua Maldita:</b> Causa daño de ahogamiento progresivo." },
-        43: { title: "Haunt #43: La Peste Negra", goal: "Infectar a todos los héroes con la plaga.", setup: "Aplica el estado Infección al primer héroe.", know: "Intentan sintetizar la cura en el Laboratorio usando medicina y Mandrágora.", actions: "Propaga la plaga en cada turno reduciendo atributos paulatinamente.", monsters: "<b>Plaga / Vector:</b> Transmite la plaga por contacto directo." },
-        44: { title: "Haunt #44: La Ilusión Fatal", goal: "Engañar a los héroes con copias ilusorias hasta eliminarlos.", setup: "Despliega proyecciones falsas del Traidor.", know: "Usan la Bola de Cristal o el Libro para identificar la versión real.", actions: "Ataca desde las ilusiones y cambia de posición secretamente.", monsters: "<b>Ilusiones:</b> Desaparecen al recibir un golpe pero confunden el objetivo." },
-        45: { title: "Haunt #45: El Experimento Prohibido", goal: "Proteger los generadores eléctricos en la Habitación del Horno.", setup: "Activa los generadores en el Horno.", know: "Intentan accionar las palancas para desconectar la energía.", actions: "Electcuta las habitaciones canalizando la energía de los cables.", monsters: "<b>Instalación Electrificada:</b> Daño extra a héroes con objetos metálicos." },
-        46: { title: "Haunt #46: El Despertar del Primigenio", goal: "Reducir la Cordura global de todos los exploradores a cero.", setup: "Inicia el aura de locura en la mansión.", know: "Leen el Libro en la Capilla acumulando tiradas de Sanidad.", actions: "Proyecta ondas de locura que debilitan la Sanidad general.", monsters: "<b>Aura Primigenia:</b> Daño mental progresivo de zona." },
-        47: { title: "Haunt #47: El Laberinto de Sombras", goal: "Eliminar a los héroes usando las Sombras Vivientes.", setup: "Despliega sombras vivientes en zonas sin luz.", know: "Alinean los espejos en la Torre y Biblioteca para proyectar luz.", actions: "Ataca desde las estancias oscuras con ventaja de combate.", monsters: "<b>Sombras Vivientes:</b> Inmunes en la oscuridad; se disipan con luz." },
-        48: { title: "Haunt #48: El Portal al Infierno", goal: "Mantener abiertas las 3 runas del portal infernal.", setup: "Coloca las 3 runas en la Cámara Pentagrama.", know: "Pagan salud en cada runa para cerrarlas definitivamente.", actions: "Invoca criaturas infernales desde el portal abierto.", monsters: "<b>Bestias Infernales:</b> Ataques de fuego directo." },
-        49: { title: "Haunt #49: La Molicie de las Almas", goal: "Absorber la fuerza de las almas atrapadas para volverte invencible.", setup: "Equipa las Vasijas de Almas.", know: "Rompén las vasijas atacando tu Sanidad con el Anillo o en la Cripta.", actions: "Consume almas para aumentar temporalmente tus atributos de combate.", monsters: "<b>Traidor Almas:</b> Aumenta su Fuerza a medida que consume almas." },
-        50: { title: "Haunt #50: Búsqueda del Tesoro (Escape)", goal: "Evitar que los héroes reúnan las 3 llaves y escapen antes de 12 horas.", setup: "Inicia el reloj del derrumbe y coloca las llaves ocultas.", know: "Registran estancias con Conocimiento para hallar las llaves y huir.", actions: "Provoca derrumbes y envía monstruos errantes a cerrar las salidas.", monsters: "<b>Monstruos Errantes:</b> Entorpecen la búsqueda del tesoro." }
+        5: { title: "Haunt #5: Licántropo Adolescente", goal: "Todos los héroes están muertos o se han transformado en Hombres Lobo.", setup: "Transforma tu ficha en Lobo. Restaura y sube atributos según número de héroes.", know: "Eres demasiado lobuno para recordar detalles de sus planes.", actions: "Ganas +1 Fuerza y +1 Velocidad por turno.", monsters: "<b>Hombre Lobo / Perro (Vel: 6, Fue: 4, Cor: 3):</b> Infecta con Cordura 4+. Daño reducido a la mitad." }
     };
 
     function inicializarUI() {
@@ -465,7 +420,6 @@
         const omenSelect = document.getElementById('omen-select');
         const hauntSelect = document.getElementById('haunt-select');
 
-        // Cargar Habitaciones
         const rooms = Object.keys(HAUNT_MATRIX);
         roomSelect.innerHTML = '';
         rooms.forEach(room => {
@@ -475,17 +429,15 @@
             roomSelect.appendChild(opt);
         });
 
-        // Cargar Presagios
         const omens = Object.keys(HAUNT_MATRIX[rooms[0]]);
         omenSelect.innerHTML = '';
         omens.forEach(omen => {
             const opt = document.createElement('option');
             opt.value = omen;
-            opt.textContent = omen;
+            opt.textContent = OMEN_TRANSLATIONS[omen] || omen;
             omenSelect.appendChild(opt);
         });
 
-        // Cargar Select Directo de Escenarios
         hauntSelect.innerHTML = '';
         for (let i = 1; i <= 50; i++) {
             const opt = document.createElement('option');
@@ -494,7 +446,6 @@
             hauntSelect.appendChild(opt);
         }
 
-        // Calcular escenario inicial por defecto
         calcularCruce();
     }
 
@@ -523,11 +474,9 @@
 
         const traitorRule = TRAITOR_RULES_TEXT[num] || "Consulte el manual para determinar el traidor.";
 
-        // Bloquear con cubierta de seguridad
         document.getElementById('spoiler-cover').style.display = 'flex';
         document.getElementById('cover-title').innerText = data.title;
         
-        // Cargar datos en el documento
         document.getElementById('haunt-title').innerText = data.title;
         document.getElementById('haunt-traitor').innerText = traitorRule;
         document.getElementById('haunt-goal').innerHTML = data.goal;
