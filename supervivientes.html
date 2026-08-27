@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grimorio de Supervivientes - Betrayal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=IM+Fell+English:ital@0;1&display=swap');
+
+        :root {
+            --leather-dark: #0d0705;
+            --leather-mid: #2c1a12;
+            --gold-accent: #c5a059;
+            --gold-bright: #e6c687;
+            --parchment-bg: #f5f0eb;
+            --parchment-card: #ffffff;
+            --ink-black: #111111;
+            --ink-red: #8b0000;
+            --border-dark: #222222;
+        }
+
+        body {
+            font-family: 'IM Fell English', serif;
+            background-color: var(--leather-dark);
+            background-image: radial-gradient(circle at center, #2c1a12 0%, #0d0705 100%);
+            color: var(--ink-black);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* PANEL DE NAVEGACIÓN Superior */
+        .grimoire-control {
+            background: rgba(13, 7, 5, 0.95);
+            border: 2px solid var(--gold-accent);
+            border-radius: 6px;
+            padding: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+        }
+
+        .grimoire-control label {
+            color: var(--gold-bright);
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            align-self: flex-start;
+        }
+
+        .select-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        select {
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            padding: 8px 12px;
+            border: 1px solid var(--gold-accent);
+            border-radius: 4px;
+            background: #1c1815;
+            color: #f3edd9;
+            width: 100%;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .divider {
+            width: 100%;
+            border-bottom: 1px solid rgba(197, 160, 89, 0.3);
+            margin: 4px 0;
+        }
+
+        /* CONTENEDOR DE LIBRO */
+        .book-container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--parchment-bg);
+            border: 10px solid var(--leather-mid);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+            min-height: 520px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* PORTADA ANTI-SPOILER SOBREPUESTA */
+        .spoiler-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #3a2218 0%, #1a0f0a 100%);
+            border: 3px double var(--gold-accent);
+            box-sizing: border-box;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+            text-align: center;
+            border-radius: 2px;
+        }
+
+        .spoiler-title {
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            color: var(--gold-bright);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px #000;
+        }
+
+        .spoiler-subtitle {
+            font-size: 13px;
+            color: #d8ceb3;
+            font-style: italic;
+            margin-bottom: 25px;
+        }
+
+        .btn-reveal {
+            font-family: 'Cinzel', serif;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 12px 24px;
+            background: linear-gradient(180deg, #8b0000 0%, #4a0000 100%);
+            color: #ffffff;
+            border: 1.5px solid var(--gold-accent);
+            border-radius: 4px;
+            cursor: pointer;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+            transition: transform 0.1s;
+        }
+
+        .btn-reveal:active {
+            transform: scale(0.97);
+        }
+
+        /* CABECERA DE LA PÁGINA REVELADA */
+        .page-header {
+            text-align: center;
+            border-bottom: 2px solid var(--ink-black);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        .book-tag {
+            font-family: 'Cinzel', serif;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--ink-red);
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .book-title {
+            font-family: 'Cinzel', serif;
+            font-size: 17px;
+            font-weight: 900;
+            color: var(--ink-black);
+            margin: 2px 0 0 0;
+            text-transform: uppercase;
+        }
+
+        /* SECCIONES INDEPENDIENTES DE ALTO CONTRASTE */
+        .section-card {
+            background: var(--parchment-card);
+            border: 1.5px solid var(--border-dark);
+            border-left: 5px solid var(--border-dark);
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .section-card.goal-card {
+            background: #fff8f8;
+            border-color: var(--ink-red);
+            border-left-color: var(--ink-red);
+        }
+
+        .section-card.traitor-card {
+            background: #fdfaf3;
+            border-color: var(--gold-accent);
+            border-left-color: var(--gold-accent);
+        }
+
+        .section-header-title {
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .goal-card .section-header-title {
+            color: var(--ink-red);
+        }
+
+        .traitor-card .section-header-title {
+            color: #7a5c1e;
+        }
+
+        .section-card .section-header-title {
+            color: var(--ink-black);
+        }
+
+        .section-body {
+            font-size: 12px;
+            line-height: 1.35;
+            color: var(--ink-black);
+            margin: 0;
+        }
+
+        .page-footer {
+            border-top: 1px dashed #aaa;
+            padding-top: 6px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            font-family: 'Cinzel', serif;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grimoire-control">
+        <!-- CRUCE HABITACIÓN / PRESAGIO -->
+        <div class="select-group">
+            <label for="room-select">🏛️ Habitación del Presagio</label>
+            <select id="room-select" onchange="calcularCruze()">
+                <!-- Opciones cargadas dinámicamente -->
+            </select>
+        </div>
+
+        <div class="select-group">
+            <label for="omen-select">🔮 Presagio Revelado</label>
+            <select id="omen-select" onchange="calcularCruze()">
+                <!-- Opciones cargadas dinámicamente -->
+            </select>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- SELECCIÓN DIRECTA -->
+        <div class="select-group">
+            <label for="haunt-select">📜 O Seleccionar Escenario Directo</label>
+            <select id="haunt-select" onchange="seleccionarEscenarioDirecto(this.value)">
+                <!-- Opciones cargadas dinámicamente -->
+            </select>
+        </div>
+    </div>
+
+    <!-- PÁGINA PRINCIPAL DEL LIBRO -->
+    <div class="book-container">
+        
+        <!-- TAPADERA DE SEGURIDAD ANTI-SPOILERS -->
+        <div id="spoiler-cover" class="spoiler-cover">
+            <div style="font-size: 30px; margin-bottom: 10px;">🛡️</div>
+            <div class="spoiler-title" id="cover-title">ESCENARIO #1</div>
+            <div class="spoiler-subtitle">El contenido está oculto para evitar revelar la historia antes de tiempo.</div>
+            <button class="btn-reveal" onclick="revelarFolio()">👁️ Revelar Folio</button>
+        </div>
+
+        <!-- CONTENIDO DETALLADO -->
+        <div>
+            <div class="page-header">
+                <div class="book-tag">Secretos para Sobrevivir • Héroes</div>
+                <div id="haunt-title" class="book-title">Haunt #1</div>
+            </div>
+
+            <div class="section-card traitor-card">
+                <div class="section-header-title">🗡️ Determinación del Traidor</div>
+                <div id="haunt-traitor" class="section-body"></div>
+            </div>
+
+            <div class="section-card goal-card">
+                <div class="section-header-title">🎯 Objetivo Fundamental</div>
+                <div id="haunt-goal" class="section-body"></div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header-title">📜 Tareas & Pasos a Seguir</div>
+                <div id="haunt-tasks" class="section-body"></div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header-title">⚠️ Amenaza & Comportamiento</div>
+                <div id="haunt-threat" class="section-body"></div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header-title">⚔️ Regla de Combate / Victoria</div>
+                <div id="haunt-combat" class="section-body"></div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>Betrayal Solo Edition</span>
+            <span id="page-num">Folio I</span>
+            <span>Guía de Mesa</span>
+        </div>
+    </div>
+
+<script>
+    // 1. MATRIZ DE CRUCE (ROOM VS OMEN)
+    const HAUNT_MATRIX = {
+        "Abandoned Room": { "Bite": 18, "Book": 7, "Crystal Ball": 12, "Dog": 38, "Girl": 1, "Holy Symbol": 9, "Madman": 45, "Mask": 42, "Medallion": 49, "Ring": 28, "Skull": 34, "Spear": 43, "Spirit Board": 48 },
+        "Balcony": { "Bite": 24, "Book": 7, "Crystal Ball": 32, "Dog": 5, "Girl": 16, "Holy Symbol": 6, "Madman": 11, "Mask": 25, "Medallion": 49, "Ring": 20, "Skull": 47, "Spear": 39, "Spirit Board": 2 },
+        "Catacombs": { "Bite": 4, "Book": 7, "Crystal Ball": 23, "Dog": 46, "Girl": 1, "Holy Symbol": 13, "Madman": 10, "Mask": 25, "Medallion": 49, "Ring": 41, "Skull": 37, "Spear": 43, "Spirit Board": 48 },
+        "Charred Room": { "Bite": 24, "Book": 33, "Crystal Ball": 23, "Dog": 38, "Girl": 30, "Holy Symbol": 13, "Madman": 31, "Mask": 48, "Medallion": 44, "Ring": 20, "Skull": 47, "Spear": 15, "Spirit Board": 8 },
+        "Dining Room": { "Bite": 24, "Book": 3, "Crystal Ball": 27, "Dog": 5, "Girl": 16, "Holy Symbol": 6, "Madman": 45, "Mask": 42, "Medallion": 21, "Ring": 20, "Skull": 37, "Spear": 39, "Spirit Board": 40 },
+        "Furnace Room": { "Bite": 4, "Book": 33, "Crystal Ball": 32, "Dog": 38, "Girl": 30, "Holy Symbol": 13, "Madman": 10, "Mask": 42, "Medallion": 36, "Ring": 28, "Skull": 34, "Spear": 15, "Spirit Board": 2 },
+        "Gallery": { "Bite": 18, "Book": 3, "Crystal Ball": 19, "Dog": 19, "Girl": 19, "Holy Symbol": 22, "Madman": 10, "Mask": 25, "Medallion": 36, "Ring": 41, "Skull": 37, "Spear": 15, "Spirit Board": 8 },
+        "Gymnasium": { "Bite": 35, "Book": 29, "Crystal Ball": 12, "Dog": 46, "Girl": 1, "Holy Symbol": 22, "Madman": 11, "Mask": 22, "Medallion": 21, "Ring": 41, "Skull": 47, "Spear": 43, "Spirit Board": 48 },
+        "Junk Room": { "Bite": 4, "Book": 33, "Crystal Ball": 27, "Dog": 46, "Girl": 1, "Holy Symbol": 9, "Madman": 11, "Mask": 25, "Medallion": 44, "Ring": 17, "Skull": 17, "Spear": 17, "Spirit Board": 40 },
+        "Kitchen": { "Bite": 18, "Book": 3, "Crystal Ball": 23, "Dog": 46, "Girl": 16, "Holy Symbol": 22, "Madman": 31, "Mask": 32, "Medallion": 36, "Ring": 41, "Skull": 37, "Spear": 39, "Spirit Board": 2 },
+        "Master Bedroom": { "Bite": 35, "Book": 29, "Crystal Ball": 27, "Dog": 5, "Girl": 16, "Holy Symbol": 6, "Madman": 10, "Mask": 35, "Medallion": 44, "Ring": 20, "Skull": 47, "Spear": 43, "Spirit Board": 2 },
+        "Pentagram Chamber": { "Bite": 26, "Book": 50, "Crystal Ball": 32, "Dog": 50, "Girl": 26, "Holy Symbol": 26, "Madman": 45, "Mask": 14, "Medallion": 14, "Ring": 26, "Skull": 14, "Spear": 50, "Spirit Board": 40 },
+        "Servants' Quarters": { "Bite": 35, "Book": 29, "Crystal Ball": 12, "Dog": 5, "Girl": 30, "Holy Symbol": 9, "Madman": 31, "Mask": 42, "Medallion": 21, "Ring": 28, "Skull": 34, "Spear": 15, "Spirit Board": 8 }
+    };
+
+    // 2. REGLAS DE TRAIDORES EN ESPAÑOL
+    const TRAITOR_RULES_TEXT = {
+        1: "El revelador del escenario es el Traidor.",
+        2: "El revelador del escenario es el Traidor.",
+        3: "El explorador con el menor Conocimiento (excepto el revelador).",
+        4: "El explorador con la mayor Fuerza (excepto el revelador).",
+        5: "El revelador del escenario es el Traidor.",
+        6: "El explorador con la menor Cordura.",
+        7: "Padre Rhinehardt, Vivian Lopez o el explorador a la izquierda del revelador.",
+        8: "El revelador del escenario es el Traidor.",
+        9: "Ninguno al principio.",
+        10: "El revelador del escenario es el Traidor.",
+        11: "El revelador del escenario es el Traidor.",
+        12: "Ninguno (Escenario completamente cooperativo).",
+        13: "El explorador con la menor Cordura (excepto el revelador).",
+        14: "El revelador del escenario es el Traidor.",
+        15: "El explorador con la menor Velocidad (excepto el revelador).",
+        16: "El explorador a la izquierda del revelador.",
+        17: "El explorador a la izquierda del revelador.",
+        18: "El revelador del escenario es el Traidor.",
+        19: "El explorador a la izquierda del revelador.",
+        20: "El explorador con la mayor Cordura.",
+        21: "El explorador más viejo (excepto el revelador).",
+        22: "El explorador a la izquierda del revelador.",
+        23: "El explorador a la izquierda del revelador.",
+        24: "Brandon Jaspers o el explorador con la menor Velocidad.",
+        25: "Zoe Ingstrom o el explorador con el mayor Conocimiento.",
+        26: "El explorador a la izquierda del revelador.",
+        27: "El explorador con el mayor Conocimiento (excepto el revelador).",
+        28: "El explorador con el mayor Conocimiento (excepto el revelador).",
+        29: "El revelador del escenario es el Traidor.",
+        30: "El revelador del escenario es el Traidor.",
+        31: "Ver instrucciones en Secretos para Sobrevivir.",
+        32: "El explorador con la mayor Cordura.",
+        33: "El revelador del escenario es el Traidor.",
+        34: "Traidor Oculto (determinado por las reglas del escenario).",
+        35: "El explorador con el mayor Conocimiento.",
+        36: "Missy Dubourde o el explorador con la mayor Velocidad.",
+        37: "El explorador con la menor Fuerza.",
+        38: "El explorador con el menor Conocimiento (excepto el revelador).",
+        39: "El explorador con la mayor Velocidad (excepto el revelador).",
+        40: "El explorador a la izquierda del revelador.",
+        41: "El revelador del escenario es el Traidor.",
+        42: "El explorador con la mayor Fuerza.",
+        43: "Traidor Oculto (determinado por las reglas del escenario).",
+        44: "El explorador más joven (excepto el revelador).",
+        45: "El explorador con el mayor Conocimiento (excepto el revelador).",
+        46: "Madame Zostra o el explorador con la menor Velocidad.",
+        47: "El revelador del escenario es el Traidor.",
+        48: "El explorador a la izquierda del revelador.",
+        49: "Heather Granville o el explorador con el mayor Conocimiento.",
+        50: "Ninguno."
+    };
+
+    // 3. BASE DE DATOS DE ESCENARIOS
+    const survivorHaunts = {
+        1: { title: "Haunt #1: La Momia Camina", goal: "Regresar a la Momia a la tierra de los muertos mediante un Exorcismo o derrotándola con el Anillo o Símbolo Santo[cite: 14].", tasks: "Busca el Símbolo Santo o el Anillo[cite: 14]. Haz tiradas de Conocimiento en la Biblioteca o Sarcófago para descubrir su verdadero nombre[cite: 14].", threat: "<b>La Momia:</b> Inmune a ataques de Velocidad[cite: 14]. Si saca 0 o 1 al moverse, se teletransporta por pasadizos secretos a cualquier habitación[cite: 14].", combat: "Usa Cordura o Fuerza para atacarla cuando conozcas su nombre[cite: 14]. Evita que capture a La Muchacha[cite: 14]." },
+        2: { title: "Haunt #2: La Sesión de Espiritismo", goal: "Invocar al Fantasma antes que el Traidor y enterrar sus restos en la Cripta o Cementerio[cite: 15].", tasks: "Haz tiradas de Conocimiento o Cordura (5+) en la habitación Pentagrama[cite: 15]. Al invocarlo, busca sus huesos en el Ático o Dormitorios[cite: 15].", threat: "<b>El Fantasma / Traidor:</b> Compite por la invocación[cite: 15]. Tienes hasta el turno 5 para enterrar los huesos antes de que el Traidor tome el control[cite: 15].", combat: "Solo puedes dañarlo con ataques de Cordura (usando el Anillo o en la Cámara Pentagrama)[cite: 15]." },
+        3: { title: "Haunt #3: Estofado de Ancas de Rana", goal: "Lanzar el hechizo Forma Mortal a la Bruja para hacerla vulnerable y eliminarla[cite: 16].", tasks: "1. Desentierra la Mandrágora (ficha Raíz, Conocimiento 4+)[cite: 16]. 2. Con la Mandrágora y el Libro, lanza el hechizo a la Bruja (Conocimiento 6+)[cite: 16].", threat: "<b>La Bruja:</b> Es totalmente INVULNERABLE hasta que reciba el hechizo[cite: 16]. Puede transformar Héroes en Ranas[cite: 16].", combat: "Si te conviertes en rana, pierdes objetos y tus atributos caen al mínimo[cite: 16]. Un aliado te puede curar con el Libro[cite: 16]." },
+        4: { title: "Haunt #4: La Telaraña del Destino", goal: "Liberar al explorador atrapado, destruir los huevos de araña y escapar de la casa[cite: 17].", tasks: "1. Ataca la telaraña con Fuerza 4+ hasta acumular contadores[cite: 17]. 2. Usa el Botiquín o Bálsamo Curativo (Conocimiento 4+) para destruir los huevos[cite: 17].", threat: "<b>Araña Gigante:</b> Protege la telaraña[cite: 17]. El explorador atrapado no puede moverse pero puede atacar[cite: 17].", combat: "Una vez libre y sin huevos, fuerza o rompe la cerradura del Vestíbulo (Fuerza/Conocimiento 6+) para ganar[cite: 17]." },
+        5: { title: "Haunt #5: Licántropo Adolescente", goal: "Eliminar a todos los Hombres Lobo usando el Revólver cargado con Balas de Plata[cite: 18].", tasks: "1. Busca el Revólver en el Ático/Cripta (Conocimiento 5+)[cite: 18]. 2. Fabrica Balas de Plata en el Horno/Laboratorio (Conocimiento 5+)[cite: 18].", threat: "<b>Contagio:</b> Si sufres daño de un Lobo, recibes un contador de Lobo[cite: 18]. Tira Cordura (4+) al inicio de tu turno para resistir la maldición[cite: 18].", combat: "Un solo disparo de Revólver con Bala de Plata elimina a un Hombre Lobo al instante[cite: 18]." },
+        6: { title: "Haunt #6: El Ojo Flotante", goal: "Inutilizar la Nave Espacial antes de que los Aliens abduzcan a los exploradores[cite: 19].", tasks: "Realiza tiradas de Fuerza (5+) estando en la habitación de la Nave Espacial para acumular éxitos e inutilizarla[cite: 19].", threat: "<b>Control Mental Alien:</b> Los Aliens pueden controlar héroes y moverlos a la nave[cite: 19]. Si entras a bordo, quedas fuera del juego[cite: 19].", combat: "Para liberar a un héroe controlado, debes atacarlo y derrotarlo (sufre solo la mitad de daño)[cite: 19]." },
+        7: { title: "Haunt #7: Hiedra Carnívora", goal: "Crear el Spray de Plantas y rociar las raíces para repeler la hiedra[cite: 20].", tasks: "1. Lleva el Libro a la Cocina o Laboratorio y crea el Spray (Conocimiento 5+)[cite: 20]. 2. Rocía las raíces para eliminarlas[cite: 20].", threat: "<b>Puntas y Raíces:</b> Las Puntas te agarran y te arrastran[cite: 20]. Las raíces son inmunes a ataques normales (solo mueren con Spray)[cite: 20].", combat: "Si te atrapa una Punta, puedes atacarla para atontarla y liberarte[cite: 20]." },
+        8: { title: "Haunt #8: El Gemido de la Banshee", goal: "Completar el ritual de Exorcismo antes de que el gemido de la Banshee consuma al grupo[cite: 21].", tasks: "Acumula tiradas de Exorcismo (Cordura/Conocimiento 5+) usando habitaciones sagradas (Capilla/Cripta) u objetos (Biblia/Cristal)[cite: 21].", threat: "<b>La Banshee:</b> NO PUEDE SER ATACADA[cite: 21]. El Traidor es inmune por llevar la Tabla de Espiritismo (intenta robársela)[cite: 21].", combat: "Cada habitación u objeto solo puede utilizarse con éxito UNA vez para el exorcismo[cite: 21]." },
+        9: { title: "Haunt #9: La Danza de la Muerte", goal: "Desterrar al Violinista Oscuro resistiendo la locura de su melodía[cite: 22].", tasks: "1. Lleva el Símbolo Sagrado a la Cámara Pentagrama[cite: 22]. 2. Realiza tiradas de Cordura 5+ en esa habitación para acumular éxitos[cite: 22].", threat: "<b>Violín Maldito:</b> Al inicio de tu turno debes sacar 4+ en Cordura o perderás cordura y serás arrastrado al Salón de Baile[cite: 22].", combat: "Si tu Cordura llega a la calavera, no mueres: ¡te conviertes en Traidor![cite: 22]" },
+        10: { title: "Haunt #10: Ampliando la Familia", goal: "Atrapar a todos los Zombis atrayéndolos a sus habitaciones favoritas[cite: 23].", tasks: "Atrae a los Zombis a la Capilla, Biblioteca, Ático, Invernadero o Dormitorio Principal[cite: 23]. Al entrar, tiran Conocimiento 4+ o quedan atrapados[cite: 23].", threat: "<b>Horda Zombi:</b> Avanzan hacia el explorador más cercano que puedan ver[cite: 23].", combat: "Una vez que una habitación atrapa a un Zombi, esa habitación no puede usarse de nuevo[cite: 23]." },
+        11: { title: "Haunt #11: No les Dejes Entrar", goal: "Hacer desaparecer a todos los Espectros realizando un exorcismo o derrotándolos con ataques de Cordura con el Anillo[cite: 24].", tasks: "Realiza tiradas de exorcismo en Capilla/Cripta/Pentagrama (Cordura 5+) o en Biblioteca/Laboratorio (Conocimiento 5+)[cite: 24]. Usar objetos sagrados/libros otorga bonos[cite: 24].", threat: "<b>Espectros:</b> Inmunes a ataques físicos normales[cite: 24]. El Loco intenta abrir las ventanas pero no ataca directamente (se defiende si le atacas)[cite: 24].", combat: "Cada objeto/habitación solo sirve para 1 exorcismo exitoso[cite: 24]. Acumulad éxitos iguales al número de jugadores[cite: 24]." },
+        12: { title: "Haunt #12: Masas de Carne Andantes", goal: "Estar vivo mientras todos los Gemelos Diabólicos son eliminados[cite: 25]. ¡Sin Traidor oficial![cite: 25]", tasks: "Tu Gemelo nace en la Entrada Principal con tus mismos atributos iniciales[cite: 25]. Busca la Bola de Cristal para matarlo definitivamente[cite: 25].", threat: "<b>Gemelos Diabólicos:</b> Se mueven hacia su contraparte para atacar[cite: 25]. Si un héroe muere, pasa a controlar a su Gemelo para atacar a los demás[cite: 25].", combat: "Si luchas contra tu Gemelo sin la Bola de Cristal, pierdes 1 punto extra en todos tus atributos[cite: 25]. Con la bola, lo matas al derrotarlo[cite: 25]." },
+        13: { title: "Haunt #13: Tal Vez Soñar", goal: "Despertar al Soñador antes de que un número secreto de Pesadillas escape de la casa[cite: 26].", tasks: "1. Lleva el Símbolo Sagrado a la habitación del Soñador[cite: 26]. 2. Realiza tiradas de Cordura o Fuerza (5+) allí para acumular marcas de despertar[cite: 26].", threat: "<b>Pesadillas:</b> Creadas por el subconsciente, hacen daño mental en vez de físico[cite: 26]. Al ser derrotadas, mueren en lugar de aturdirse[cite: 26].", combat: "Las Sales no pueden usarse para despertar al Soñador[cite: 26]. Acumulad éxitos iguales al número de jugadores[cite: 26]." },
+        14: { title: "Haunt #14: Las Estrellas lo Saben", goal: "Profanar el Pentagrama derramando pintura sobre él antes de que la Secta complete el sacrificio[cite: 27].", tasks: "Recolecta los botes de Pintura en Cocina/Despensa/Ático (solo 1 por héroe)[cite: 27]. Viértelos desde una habitación adyacente al Pentagrama[cite: 27].", threat: "<b>Cultistas / Traidor:</b> Buscan llevar cadáveres de héroes o profecías a la Cámara Pentagrama para sacrificarlos[cite: 27].", combat: "Si un héroe muere, su cuerpo puede ser transportado como objeto por los Cultistas para el ritual[cite: 27]." },
+        15: { title: "Haunt #15: Aquí hay Dragones", goal: "Eliminar al Dragón gigante usando armas y armaduras legendarias[cite: 28].", tasks: "1. Busca la Armadura Antigua y el Escudo en el Sótano[cite: 28]. 2. Encuentra la Lanza para obtener +4 en ataques de Fuerza contra el Dragón[cite: 28].", threat: "<b>El Dragón:</b> Exhala fuego y muerde con inmensa resistencia[cite: 28]. El Traidor anota el daño total recibido por la bestia[cite: 28].", combat: "El Escudo te hace inmune al Aliento de Fuego (y protege a los aliados en tu habitación)[cite: 28]. La Armadura reduce 5 de daño físico[cite: 28]." },
+        16: { title: "Haunt #16: El Abrazo del Fantasma", goal: "Rescatar a La Chica en el sótano y desactivar la bomba o escapar de la casa a tiempo[cite: 29].", tasks: "1. Encuentra al Fantasma en el sótano y derrótalo para liberar a La Chica[cite: 29]. 2. Desactiva la bomba (Conocimiento 7+) o fuerza la puerta principal (6+)[cite: 29].", threat: "<b>Bomba & Fantasma:</b> El Fantasma retiene a La Chica[cite: 29]. Si el Fantasma te vence, huye con la chica a otra habitación de profecía del sótano[cite: 29].", combat: "Llevar a La Chica o forzar la puerta permite escapar a los héroes en turnos posteriores[cite: 29]." },
+        17: { title: "Haunt #17: Bichos", goal: "Destruir al menos 3 Bichos Gigantes con el Insecticida en Spray para que el resto huya[cite: 30].", tasks: "1. Reúne 3 de los 6 ingredientes repartidos en la casa[cite: 30]. 2. Llévalos a la Cocina/Laboratorio y crea el Spray (Conocimiento 4+)[cite: 30].", threat: "<b>Bichos Gigantes & Traidor:</b> Los bichos atacan en grupo[cite: 30]. El Traidor intentará destruir los ingredientes o el spray[cite: 30].", combat: "Usa el Spray de Insecticida realizando ataques de Velocidad contra los bichos para eliminarlos al instante[cite: 30]." },
+        18: { title: "Haunt #18: Los Retoños", goal: "Encontrar la Flor de Lavanda y usarla para debilitar y quemar a la Planta Diabólica[cite: 31].", tasks: "1. Encuentra la Flor en Invernadero/Jardín/Cementerio (Conocimiento 5+)[cite: 31]. 2. Llévala ante la Planta y realiza tiradas de Conocimiento (5+) para destruirla[cite: 31].", threat: "<b>Esporas Tóxicas:</b> Moverte por habitaciones con esporas inflige 1 dado de daño físico[cite: 31]. Contén el aliento (respiración = Fuerza) para cruzar gratis[cite: 31].", combat: "Recuperar el aliento exige detenerte 1 turno penalizado[cite: 31]. La Flor no puede ser robada por el Traidor[cite: 31]." },
+        19: { title: "Haunt #19: El Señor de las Bestias", goal: "Arrebatarle la Lanza al Señor de las Bestias mediante un ataque especial para devolverlo a la normalidad[cite: 32].", tasks: "Ataca al Señor de las Bestias (el Traidor)[cite: 32]. Si infliges 2+ puntos de daño con Fuerza o Cordura (con Anillo), roba la Lanza en vez de dañarlo[cite: 32].", threat: "<b>Señor de las Bestias & Esbirros:</b> Controla animales sanguinarios[cite: 32]. ¡Si matas al Señor de las Bestias en lugar de desarmarlo, perdéis![cite: 32]", combat: "Los esbirros animales mueren al ser derrotados en combate normal[cite: 32]." },
+        20: { title: "Haunt #20: La Novia Fantasma", goal: "Desenterrar el cuerpo del verdadero novio y llevarlo junto con el Anillo a la Capilla[cite: 33].", tasks: "1. Descubre el nombre del novio (Conocimiento 5+)[cite: 33]. 2. Localiza y desentierra su cuerpo en la Cripta (Fuerza 4+)[cite: 33]. 3. Llévalo a la Capilla junto al Anillo[cite: 33].", threat: "<b>Novia Fantasma:</b> Cree que uno de los héroes es su prometido[cite: 33]. Transportar el cadáver consume 2 espacios de movimiento por casilla[cite: 33].", combat: "Solo puedes realizar ataques de Cordura contra la Novia Fantasma si posees el Anillo de Boda[cite: 33]." },
+        21: { title: "Haunt #21: La Casa de los Muertos Vivientes", goal: "Destruir al Señor de los Zombis o eliminar a todos los Zombis.", tasks: "Busca armas de Fuerza (Dinamita) o el Medallón para herir al Señor de los Zombis. El Símbolo Sagrado reduce 2 dados de daño de los zombis normales.", threat: "<b>Zombis & Señor Zombi:</b> Inmunes al Revólver (solo se aturden con otras armas salvo que sean de Fuerza/Dinamita). Si mueres, te conviertes en zombi en tu siguiente turno.", combat: "Al robar objetos, roba 3, elige 1 y pon los demás al fondo del mazo." },
+        22: { title: "Haunt #22: El Abismo Devuelve la Mirada", goal: "Realizar un exorcismo antes de que la casa colapse por completo al Abismo.", tasks: "Acumula tiradas de exorcismo en Capilla/Cripta/Pentagrama (Cordura 5+) o Biblioteca/Laboratorio (Conocimiento 5+).", threat: "<b>El Abismo:</b> En cada turno, habitaciones colapsan. Si estás dentro, tirada de Velocidad 4+ o caes al vacío.", combat: "El Símbolo Sagrado permite evitar el colapso de una habitación adyacente." },
+        23: { title: "Haunt #23: El Horror Tentaculado", goal: "Localizar la cabeza de la criatura y destruirla con Dinamita o la Lanza.", tasks: "1. Usa la Bola de Cristal (Conocimiento 4+) y tira 4 dados. 2. Ve a esa habitación y ataca.", threat: "<b>Tentáculos:</b> Si una punta te arrastra a su raíz, mueres al inicio del turno del monstruo.", combat: "Derrotar una punta la aturde y la obliga a retirarse a su raíz." },
+        24: { title: "Haunt #24: Vuela de Vuelta a Casa", goal: "Poner en marcha el Órgano, reproducir la frecuencia adecuada y eliminar murciélagos pegados.", tasks: "1. Encender el Órgano (Fuerza 5+). 2. Hacer ruidos adecuados (Conocimiento 6+).", threat: "<b>Murciélagos:</b> Al inicio de tu turno sufres 1 de daño por murciélago pegado.", combat: "Ataca a los murciélagos pegados con Fuerza para matarlos directamente." },
+        25: { title: "Haunt #25: Muñecos Vudú", goal: "Seguir las pistas del Traidor, localizar el Muñeco Vudú de tu héroe y destruirlo.", tasks: "Escucha las pistas, entra a la habitación e intenta una tirada de Conocimiento 2+.", threat: "<b>Efecto Vudú:</b> Los efectos de los muñecos empeoran según pasa el tiempo.", combat: "Se suspende la regla de detenerse al explorar habitaciones no descubiertas." },
+        26: { title: "Haunt #26: Sufre las Consecuencias", goal: "Destruir a todas las Ratas o eliminar al Traidor antes de que alcance el Pentagrama.", tasks: "Ataca a las ratas rápidamente. Evita que el Traidor llegue a la Cámara Pentagrama.", threat: "<b>Ratas:</b> Si el Traidor entra en la Cámara Pentagrama, se vuelve invulnerable.", combat: "Infligir daño a una rata la destruye automáticamente." },
+        27: { title: "Haunt #27: Carne Enloquecida", goal: "Descubrir la debilidad de la Masa, crear la fórmula química y lanzársela.", tasks: "1. Examina la Masa (Conocimiento 3+). 2. Registra habitaciones por ingredientes. 3. Lánzalos a la Masa.", threat: "<b>La Masa:</b> Se duplica en tamaño. Entrar en su casilla te convierte en Traidor.", combat: "Lanzar ingredientes acumulados según el número de jugadores la destruye." },
+        28: { title: "Haunt #28: El Anillo del Rey Salomón", goal: "Derrotar dos veces al Señor Demonio llevando puesto el Anillo del Rey Salomón.", tasks: "Consigue el Anillo y ataca al Señor Demonio con Fuerza o Cordura (+2 a Cordura).", threat: "<b>Demonios:</b> Invaden la casa. El primer impacto lo aturde; el segundo lo destruye.", combat: "Usar Cordura con el Anillo contra otros demonios te otorga su control directo." },
+        29: { title: "Haunt #29: El Legado de Frankenstein", goal: "Destruir al Monstruo de Frankenstein mediante Fuego o haciéndolo caer.", tasks: "1. Enciende Antorchas e impleméntalas. 2. O atráelo a la Torre/Abismo y empújalo (Fuerza 6+).", threat: "<b>Frankenstein:</b> Fuerza descomunal pero torpe: siempre avanza hacia el héroe más cercano.", combat: "Impactos de Antorcha requeridos iguales al número de jugadores." },
+        30: { title: "Haunt #30: La Tumba de Drácula", goal: "Destruir a Drácula y la Novia usando la Lanza o al salir el sol.", tasks: "Empala sus corazones usando la Lanza con Fuerza o espéralos a que caigan con el sol.", threat: "<b>Vampiros:</b> Al salir el sol, pierden 1 punto en todos los rasgos por turno.", combat: "Usar el Símbolo Sagrado los obliga a retroceder 1 casilla por cada punto de daño." },
+        31: { title: "Haunt #31: El Pájaro de Mal Agüero", goal: "Capturar o ahuyentar al Pájaro Maldito en la Torre.", tasks: "Efectúa tiradas de Conocimiento en la Torre antes de completar el contador.", threat: "Provoca eventos trágicos e infortunios a todos los exploradores.", combat: "Usa armas a distancia o red de captura." },
+        32: { title: "Haunt #32: La Caza Salvaje", goal: "Sobrevivir a la cacería espectral y romper el cuerno de invocación.", tasks: "Atrae al líder de la cacería a la Capilla y destruye el instrumento sagrado.", threat: "Cazadores espectrales con gran movimiento y ataques mortales.", combat: "El Símbolo Sagrado bloquea la carga de la cacería." },
+        33: { title: "Haunt #33: El Fantasma de la Ópera", goal: "Destruir la partitura maldita en la Habitación del Órgano.", tasks: "Usa el Libro o la Bola de Cristal para descifrar las notas y quemar la composición.", threat: "Música ensordecedora que causa daño directo a Sanidad.", combat: "Usa la Vela o la Campana para contrarrestar el sonido del fantasma." },
+        34: { title: "Haunt #34: El Rito de Iniciación", goal: "Interrumpir el círculo de iniciación eliminando a los sectarios clave.", tasks: "Localiza a los 3 neófitos en las habitaciones de profecía y rompe sus amuletos.", threat: "Cultistas armados con dagas ceremoniales y hechizos de parálisis.", combat: "Usa la Daga Sacrificial o el Revólver para ataques de precisión." },
+        35: { title: "Haunt #35: La Casa del Horror", goal: "Purificar las 4 habitaciones principales dominadas por la entidad.", tasks: "Lleva el Símbolo Sagrado a la Cocina, Dormitorio, Biblioteca y Cripta y realiza exorcismos.", threat: "La casa ataca cerrando puertas y colapsando techos.", combat: "El Bálsamo Curativo restaura los atributos dañados." },
+        36: { title: "Haunt #36: El Titiritero", goal: "Cortar los hilos del Titiritero Maldito en el Ático o Salón de Juegos.", tasks: "Encuentra las Tijeras o el Hacha y realiza tiradas de Velocidad.", threat: "Héroes controlados como marionetas obligados a atacarse entre sí.", combat: "Desarmar a un héroe controlado evita recibir daño directo." },
+        37: { title: "Haunt #37: La Dimensión Desconocida", goal: "Estabilizar las brechas interdimensionales usando el Amuleto.", tasks: "Visita los portales creados en las habitaciones con profecía y ciérralos con Conocimiento 5+.", threat: "Distorsiones de realidad que alteran los atributos al azar.", combat: "La Bola de Cristal permite predecir dónde aparecerá la siguiente brecha." },
+        38: { title: "Haunt #38: El Horror del Espejo", goal: "Romper todos los espejos malditos repartidos por la mansión.", tasks: "Usa armas de Fuerza (Hacha) para romper los espejos en Dormitorios y Comedor.", threat: "Reflejos oscuros que emergen para duplicar a los héroes.", combat: "Las sombras mueren al romper el espejo de su habitación." },
+        39: { title: "Haunt #39: La Maldición de la Momia", goal: "Romper el vaso canopo para enviar de vuelta al faraón no-muerto.", tasks: "Encuentra el Vaso Canopo en la Cripta/Sarcófago y realiza una tirada de Conocimiento 6+.", threat: "La Momia avanza lentamente e inflige daño severo de Velocidad y Fuerza.", combat: "Inmune a armas de fuego; usa fuego (Vela) o hechizos." },
+        40: { title: "Haunt #40: El Enjambre", goal: "Sellar las colmenas demoníacas en el Invernadero y Jardines.", tasks: "Usa el Spray de Plantas o Antorchas para quemar los nidos de insectos.", threat: "Enjambres voladores que reducen la visibilidad y causan daño continuo.", combat: "Permanecer en habitaciones cerradas reduce el impacto del enjambre." },
+        41: { title: "Haunt #41: La Invocación del Mal", goal: "Destruir el altar del portal en la Cámara Pentagrama.", tasks: "Utiliza la Daga Sacrificial o la Dinamita para volar el altar por los aires.", threat: "Entidades demoníacas menores que protegen el altar.", combat: "El Símbolo Sagrado otorga inmunidad temporal contra los guardianes." },
+        42: { title: "Haunt #42: El Secreto del Sótano", goal: "Drenar las aguas malditas del sótano activando la bomba de drenaje.", tasks: "Ve a la Habitación del Horno o Laboratorio e intenta tiradas de Conocimiento 5+.", threat: "Inundación progresiva que ahoga las habitaciones del sótano.", combat: "Atributos de Velocidad reducidos mientras estés en agua." },
+        43: { title: "Haunt #43: La Peste Negra", goal: "Sintetizar la cura para la plaga en el Laboratorio de Investigación.", tasks: "Reúne frascos de medicina y la Mandrágora y realiza una tirada de Conocimiento 6+.", threat: "Contagio progresivo que resta atributos al inicio de cada turno.", combat: "El Botiquín previene el avance de la infección por 2 turnos." },
+        44: { title: "Haunt #44: La Ilusión Fatal", goal: "Desenmascarar al Ilusionista encontrando la carta real de la ilusión.", tasks: "Usa la Bola de Cristal o el Libro para ver a través de las proyecciones falsas.", threat: "Copias ilusorias del Traidor que atacan sin dejar rastro.", combat: "Atacar a la ilusión correcta destruye las demás automáticamente." },
+        45: { title: "Haunt #45: El Experimento Prohibido", goal: "Desconectar los generadores eléctricos en la Habitación del Horno.", tasks: "Usa tiradas de Fuerza o Conocimiento para tirar de las palancas de energía.", threat: "Descargas eléctricas e instalaciones mecanizadas agresivas.", combat: "Objetos metálicos aumentan el daño recibido por electricidad." },
+        46: { title: "Haunt #46: El Despertar del Primigenio", goal: "Completar el contra-hechizo antes de que la cordura global caiga a cero.", tasks: "Lee el Libro en la Capilla acumulando éxitos de Sanidad iguales al número de jugadores.", threat: "Aura de locura que causa pérdidas masivas de Sanidad.", combat: "El Anillo y el Ídolo protegen contra la pérdida de Sanidad." },
+        47: { title: "Haunt #47: El Laberinto de Sombras", goal: "Encontrar la salida secreta alineando los espejos astronómicos.", tasks: "Mueve los espejos en la Torre y la Biblioteca para proyectar la luz hacia la puerta.", threat: "Sombras vivientes que atacan desde la oscuridad.", combat: "Las fuentes de luz (Vela, Linterna) disipan a las sombras." },
+        48: { title: "Haunt #48: El Portal al Infierno", goal: "Sellar las 3 runas del portal usando sangre de sacrificio no mortal.", tasks: "Paga 1 dado de daño físico en cada runa para cerrarlas definitivamente.", threat: "Llamas y criaturas infernales que emergen del portal.", combat: "El Escudo reduce el daño por fuego a cero." },
+        49: { title: "Haunt #49: La Molicie de las Almas", goal: "Liberar a las almas atrapadas en las vasijas de la casa.", tasks: "Rómpele las vasijas al Traidor en combate o en la Cripta.", threat: "El Traidor absorbe la fuerza de las almas para aumentar sus atributos.", combat: "Atacar su Sanidad con el Anillo destruye las vasijas directamente." },
+        50: { title: "Haunt #50: Búsqueda del Tesoro (Escape)", goal: "Localizar las 3 llaves ocultas y abrir la puerta principal antes de 12 horas.", tasks: "Registra habitaciones (Conocimiento 4+), junta pistas y huye de los derrumbes.", threat: "La casa se derrumba al hallar cada llave y atacan monstruos errantes.", combat: "Usa armas según la vulnerabilidad de cada criatura para obtener bonos." }
+    };
+
+    function inicializarUI() {
+        const roomSelect = document.getElementById('room-select');
+        const omenSelect = document.getElementById('omen-select');
+        const hauntSelect = document.getElementById('haunt-select');
+
+        // Cargar Habitaciones
+        const rooms = Object.keys(HAUNT_MATRIX);
+        roomSelect.innerHTML = '';
+        rooms.forEach(room => {
+            const opt = document.createElement('option');
+            opt.value = room;
+            opt.textContent = room;
+            roomSelect.appendChild(opt);
+        });
+
+        // Cargar Presagios
+        const omens = Object.keys(HAUNT_MATRIX[rooms[0]]);
+        omenSelect.innerHTML = '';
+        omens.forEach(omen => {
+            const opt = document.createElement('option');
+            opt.value = omen;
+            opt.textContent = omen;
+            omenSelect.appendChild(opt);
+        });
+
+        // Cargar Select Directo de Escenarios
+        hauntSelect.innerHTML = '';
+        for (let i = 1; i <= 50; i++) {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.textContent = survivorHaunts[i].title;
+            hauntSelect.appendChild(opt);
+        }
+
+        // Calcular escenario inicial por defecto
+        calcularCruze();
+    }
+
+    function calcularCruze() {
+        const room = document.getElementById('room-select').value;
+        const omen = document.getElementById('omen-select').value;
+        const hauntNumber = HAUNT_MATRIX[room][omen];
+
+        // Sincronizar el selector directo con el número calculado
+        document.getElementById('haunt-select').value = hauntNumber;
+        
+        cargarEscenario(hauntNumber);
+    }
+
+    function seleccionarEscenarioDirecto(num) {
+        cargarEscenario(parseInt(num));
+    }
+
+    function cargarEscenario(num) {
+        const data = survivorHaunts[num];
+        const traitorRule = TRAITOR_RULES_TEXT[num] || "Consulte el manual para determinar el traidor.";
+
+        // Bloquear con cubierta de seguridad
+        document.getElementById('spoiler-cover').style.display = 'flex';
+        document.getElementById('cover-title').innerText = data.title;
+        
+        // Cargar datos en el documento
+        document.getElementById('haunt-title').innerText = data.title;
+        document.getElementById('haunt-traitor').innerText = traitorRule;
+        document.getElementById('haunt-goal').innerHTML = data.goal;
+        document.getElementById('haunt-tasks').innerHTML = data.tasks;
+        document.getElementById('haunt-threat').innerHTML = data.threat;
+        document.getElementById('haunt-combat').innerHTML = data.combat;
+        document.getElementById('page-num').innerText = `Folio ${num}`;
+    }
+
+    function revelarFolio() {
+        document.getElementById('spoiler-cover').style.display = 'none';
+    }
+
+    window.onload = inicializarUI;
+</script>
+</body>
+</html>
