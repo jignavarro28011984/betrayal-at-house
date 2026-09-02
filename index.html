@@ -3,75 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Betrayal Companion & Legacy</title>
+    <title>Betrayal App</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
+            background-color: #0b0806;
+            background-image: radial-gradient(circle at center, #1f1008 0%, #050302 100%);
+            color: #ffffff;
             font-family: 'Cinzel', serif;
-            background-color: #0f0b08;
-            background-image: radial-gradient(circle at center, #26140b 0%, #0f0b08 100%);
-            color: #f3edd9;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
             margin: 0;
             padding: 20px;
-            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .main-card {
+            background: rgba(15, 10, 7, 0.95);
+            border: 2px solid #c5a059;
+            box-shadow: 0 0 0 4px #1a100a, 0 0 25px rgba(0, 0, 0, 0.9);
+            border-radius: 6px;
+            padding: 35px 30px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
         }
 
         h1 {
-            font-size: 18px;
-            text-align: center;
-            color: #c5a059;
-            margin-bottom: 25px;
-            letter-spacing: 1.5px;
-            line-height: 1.4;
-            text-transform: uppercase;
+            font-size: 22px;
+            font-weight: 900;
+            color: #e6c687;
+            margin: 0 0 10px 0;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
 
-        .menu-container {
-            width: 100%;
-            max-width: 380px;
+        .subtitle {
+            font-size: 10px;
+            font-weight: 700;
+            color: #c5a059;
+            letter-spacing: 1.5px;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            font-style: italic;
+        }
+
+        .btn-group {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 14px;
         }
 
         .btn-menu {
-            padding: 16px;
-            font-size: 12px;
-            font-weight: bold;
-            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 18px;
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            font-weight: 900;
             text-decoration: none;
-            text-align: center;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.8);
-            transition: transform 0.1s;
-            box-sizing: border-box;
+            border-radius: 4px;
+            transition: transform 0.1s, filter 0.2s;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 8px rgba(0,0,0,0.6);
         }
 
-        .btn-menu:active { transform: scale(0.97); }
+        .btn-menu:active {
+            transform: scale(0.97);
+        }
 
-        .btn-survivors { background: #0284c7; color: #fff; border: 1.5px solid #38bdf8; }
-        .btn-traitor { background: #8b0000; color: #fff; border: 1.5px solid #c5a059; }
-        .btn-campaign { background: #15803d; color: #fff; border: 1.5px solid #4ade80; }
+        /* BOTÓN SUPERVIVIENTES */
+        .btn-survivors {
+            background: linear-gradient(180deg, #1d5276 0%, #0e2a3e 100%);
+            color: #ffffff;
+            border: 1px solid #2980b9;
+        }
+
+        /* BOTÓN TRAIDOR */
+        .btn-traitor {
+            background: linear-gradient(180deg, #7b0000 0%, #3a0000 100%);
+            color: #ffffff;
+            border: 1px solid #c0392b;
+        }
+
+        /* BOTÓN MODO CAMPAÑA */
+        .btn-campaign {
+            background: linear-gradient(180deg, #1e5631 0%, #0c2b15 100%);
+            color: #ffffff;
+            border: 1px solid #27ae60;
+        }
     </style>
 </head>
 <body>
 
-    <h1>
-        🏛️ BETRAYAL AT HOUSE ON THE HILL<br>
-        <span style="font-size:11px; color:#a58d7c; font-weight:normal;">Asistente Digital & Campaña</span>
-    </h1>
+    <div class="main-card">
+        <h1>BETRAYAL APP</h1>
+        <div class="subtitle">Selecciona tu rol en la partida:</div>
 
-    <div class="menu-container">
-        <a href="supervivientes.html" class="btn-menu btn-survivors">🛡️ Tomo de Supervivientes</a>
-        <a href="traidor.html" class="btn-menu btn-traitor">🗡️ Tomo del Traidor</a>
-        <a href="campana.html" class="btn-menu btn-campaign">📜 Modo Campaña & Bitácora</a>
+        <div class="btn-group">
+            <a href="supervivientes.html" class="btn-menu btn-survivors">
+                <span>🛡️</span> SUPERVIVIENTES
+            </a>
+            <a href="traidor.html" class="btn-menu btn-traitor">
+                <span>🗡️</span> TOMO DEL TRAIDOR
+            </a>
+            <a href="campana.html" class="btn-menu btn-campaign">
+                <span>📜</span> MODO CAMPAÑA
+            </a>
+        </div>
     </div>
 
 </body>
