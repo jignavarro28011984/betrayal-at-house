@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitácora de Campaña - Betrayal Legacy</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=IM+Fell+English:ital@0;1&display=swap');
+
+        :root {
+            --bg-dark: #0b0806;
+            --panel-bg: #1a100a;
+            --gold-accent: #c5a059;
+            --gold-bright: #e6c687;
+            --parchment-bg: #f7f2e7;
+            --ink-black: #111111;
+            --ink-red: #8b0000;
+        }
+
+        body {
+            font-family: 'IM Fell English', serif;
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at center, #26140b 0%, #0b0806 100%);
+            color: #e8dcc4;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .header-app {
+            text-align: center;
+            border-bottom: 2px double var(--gold-accent);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .header-app h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            color: var(--gold-bright);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .header-app p {
+            font-size: 11px;
+            color: #a58d7c;
+            margin: 3px 0 0 0;
+            font-style: italic;
+        }
+
+        /* CONSOLA DE TURNO EN MESA */
+        .dash-panel {
+            background: var(--panel-bg);
+            border: 2px solid var(--gold-accent);
+            border-radius: 6px;
+            padding: 12px;
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+            margin-bottom: 20px;
+        }
+
+        .dash-title {
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            color: var(--gold-bright);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-align: center;
+            border-bottom: 1px dashed rgba(197, 160, 89, 0.3);
+            padding-bottom: 4px;
+        }
+
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .dash-card {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid #4a3423;
+            border-radius: 4px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .dash-label {
+            font-family: 'Cinzel', serif;
+            font-size: 9px;
+            color: #c5a059;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .dash-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .btn-action {
+            font-family: 'Cinzel', serif;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 6px 10px;
+            background: linear-gradient(180deg, #8c6c32 0%, #572515 100%);
+            color: #fff;
+            border: 1px solid var(--gold-accent);
+            border-radius: 3px;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-top: 4px;
+            width: 100%;
+        }
+
+        .btn-action:active { transform: scale(0.96); }
+
+        /* CALCULADOR DE UMBRAL (REEMPLAZO DE TIRADA EN PANTALLA) */
+        .umbral-box {
+            background: rgba(139, 0, 0, 0.2);
+            border: 1px solid #8b0000;
+            border-radius: 4px;
+            padding: 8px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .umbral-title {
+            font-family: 'Cinzel', serif;
+            font-size: 10px;
+            color: var(--gold-bright);
+            text-transform: uppercase;
+        }
+
+        .umbral-value {
+            font-size: 22px;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin: 2px 0;
+        }
+
+        .det-info-box {
+            background: rgba(197, 160, 89, 0.1);
+            border: 1px solid var(--gold-accent);
+            border-radius: 4px;
+            padding: 6px 8px;
+            margin-top: 8px;
+            font-size: 9.5px;
+            color: #e6c687;
+            text-align: left;
+            line-height: 1.3;
+        }
+
+        /* REGISTRO LEGACY Y MALETÍN */
+        .legacy-panel {
+            background: var(--parchment-bg);
+            color: var(--ink-black);
+            border: 8px solid #2c1a12;
+            border-radius: 6px;
+            padding: 15px;
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.9);
+            margin-bottom: 20px;
+        }
+
+        .legacy-section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 11.5px;
+            font-weight: 900;
+            color: #3a180e;
+            text-transform: uppercase;
+            border-bottom: 1.5px solid #3a180e;
+            padding-bottom: 3px;
+            margin-bottom: 6px;
+            margin-top: 12px;
+        }
+
+        .select-box {
+            width: 100%;
+            padding: 7px;
+            font-family: 'IM Fell English', serif;
+            font-size: 11.5px;
+            border: 1px solid #7a5a3a;
+            border-radius: 3px;
+            background: #fff;
+            color: #111;
+            box-sizing: border-box;
+            margin-bottom: 8px;
+        }
+
+        .chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+
+        .chip-item {
+            background: #2b1d14;
+            color: #e6c687;
+            font-family: 'Cinzel', serif;
+            font-size: 9px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .chip-remove {
+            cursor: pointer;
+            color: #ff8888;
+            font-weight: bold;
+        }
+
+        .purify-box {
+            background: #fef2f2;
+            border: 1px solid #ef4444;
+            border-radius: 4px;
+            padding: 8px;
+            font-size: 10px;
+            color: #991b1b;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        /* NARRATIVA Y LORE UNLOCK */
+        .lore-card {
+            background: #fff;
+            border: 1px solid #8c6c32;
+            border-left: 4px solid #3a180e;
+            border-radius: 3px;
+            padding: 8px 10px;
+            margin-bottom: 12px;
+            font-size: 10.5px;
+            line-height: 1.35;
+            color: #2b1d14;
+        }
+
+        .lore-title {
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            color: #7a2810;
+            text-transform: uppercase;
+            font-size: 10px;
+            margin-bottom: 3px;
+        }
+
+        /* SELECTOR DE EXPEDIENTES */
+        .bando-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .btn-tab {
+            flex: 1;
+            font-family: 'Cinzel', serif;
+            font-size: 10px;
+            padding: 8px;
+            background: #0f172a;
+            color: #7dd3fc;
+            border: 1px solid #38bdf8;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .expediente-item {
+            background: #fff;
+            border: 1px solid #a58d7c;
+            border-left: 4px solid #7a5a3a;
+            border-radius: 3px;
+            padding: 8px 10px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .expediente-info { font-size: 11px; }
+        .expediente-title { font-family: 'Cinzel', serif; font-weight: bold; color: #2b0e05; }
+
+        .status-badge {
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-win { background: #d4edda; color: #155724; }
+        .status-loss { background: #f8d7da; color: #721c24; }
+        .status-pending { background: #e2e3e5; color: #383d41; }
+    </style>
+</head>
+<body>
+
+    <div class="header-app">
+        <h1>Bitácora de Campaña</h1>
+        <p>Los 100 Expedientes de la Casona • Registro Legacy</p>
+    </div>
+
+    <!-- CONSOLA DE APOYO EN MESA -->
+    <div class="dash-panel">
+        <div class="dash-title">⚙️ Consola Táctica de Turno</div>
+        <div class="dash-grid">
+            <div class="dash-card">
+                <span class="dash-label">💎 Determinación</span>
+                <div class="dash-value" id="val-det">3 / 3</div>
+                <button class="btn-action" onclick="modificarDet(-1)">Gastar 1</button>
+                <button class="btn-action" onclick="modificarDet(1)" style="margin-top:2px;">Reset (3)</button>
+            </div>
+            <div class="dash-card">
+                <span class="dash-label">🌑 Presagios + Sombras</span>
+                <div class="dash-value" id="val-sombra">0</div>
+                <button class="btn-action" onclick="modificarSombra(1)">+1 Nivel</button>
+                <button class="btn-action" onclick="modificarSombra(-1)" style="margin-top:2px;">-1 Nivel</button>
+            </div>
+        </div>
+
+        <!-- CALCULADOR DE UMBRAL DE DADOS FÍSICOS -->
+        <div class="umbral-box">
+            <div class="umbral-title">🎲 Umbral para Tirada Física de Dados</div>
+            <div class="umbral-value" id="val-umbral">MENOR A 0</div>
+            <div style="font-size: 9.5px; color: #e8dcc4;">
+                Tira tus <b>6 dados físicos</b>. Si la suma total es <b>menor a <span id="text-umbral-num">0</span></b>, ¡la Aparición se desata!
+            </div>
+        </div>
+
+        <div class="det-info-box">
+            <b>💡 USOS DE DETERMINACIÓN:</b><br>
+            • 🎲 Repetir tirada de dados fallada en mesa.<br>
+            • 🏃 +2 Pasos de movimiento extra en tu turno.<br>
+            • 🛡️ Prevenir 1 tirada de daño provocada por Evento.
+        </div>
+    </div>
+
+    <!-- REGISTRO DE PERSISTENCIA LEGACY -->
+    <div class="legacy-panel">
+
+        <!-- ARCO NARRATIVO EVOLUTIVO -->
+        <div class="legacy-section-title" style="margin-top:0;">📖 Fragmento de Historia Desbloqueado</div>
+        <div class="lore-card" id="lore-box">
+            <div class="lore-title" id="lore-title">Expediente Inicial: La Llegada</div>
+            <div id="lore-text"><i>"Las puertas de roble se cierran tras tus pasos. La mansión parece respirar. Resuelve tus primeros Expedientes para desentrañar la verdadera historia del culto que construyó esta casona..."</i></div>
+        </div>
+        
+        <!-- SELECTOR DE MALETÍN -->
+        <div class="legacy-section-title">🎒 Maletín (Añadir Objetos Rescatados)</div>
+        <select id="select-maletin" class="select-box" onchange="agregarObjetoMaletin(this.value)">
+            <option value="">-- Seleccionar Objeto Ganado --</option>
+            <option value="Angel Feather">Angel Feather (Pluma de Ángel)</option>
+            <option value="Amulet of the Ages">Amulet of the Ages (Amuleto)</option>
+            <option value="Armor">Armor (Armadura)</option>
+            <option value="Axe">Axe (Hacha)</option>
+            <option value="Bell">Bell (Campana)</option>
+            <option value="Bottle">Bottle (Botella misteriosa)</option>
+            <option value="Candle">Candle (Vela)</option>
+            <option value="Dark Dice">Dark Dice (Dados Oscuros)</option>
+            <option value="Dynamite">Dynamite (Dinamita)</option>
+            <option value="Healing Salve">Healing Salve (Bálsamo)</option>
+            <option value="Idol">Idol (Ídolo Sagrado)</option>
+            <option value="Medical Kit">Medical Kit (Botiquín Medico)</option>
+            <option value="Music Box">Music Box (Caja de Música)</option>
+            <option value="Pickaxe">Pickaxe (Pico de Minero)</option>
+            <option value="Revolver">Revolver (Revólver)</option>
+            <option value="Sacrificial Dagger">Sacrificial Dagger (Daga)</option>
+            <option value="Spear">Spear (Lanza)</option>
+        </select>
+
+        <div class="chips-container" id="container-objects">
+            <!-- Renderizado de Objetos -->
+        </div>
+
+        <!-- SELECTOR DE HABITACIONES EMBRUJADAS -->
+        <div class="legacy-section-title">🩸 Añadir Habitación Embrujada</div>
+        <select id="select-habitacion" class="select-box" onchange="agregarHabitacionEmbrujada(this.value)">
+            <option value="">-- Seleccionar Habitación para Embrujar --</option>
+            <optgroup label="Sótano (Basement)">
+                <option value="Catacombs">Catacombs</option>
+                <option value="Chasm">Chasm</option>
+                <option value="Crypt">Crypt</option>
+                <option value="Furnace Room">Furnace Room</option>
+                <option value="Pentagram Chamber">Pentagram Chamber</option>
+                <option value="Servants' Quarters">Servants' Quarters</option>
+                <option value="Underground Lake">Underground Lake</option>
+                <option value="Vault">Vault</option>
+            </optgroup>
+            <optgroup label="Planta Baja (Ground Floor)">
+                <option value="Ballroom">Ballroom</option>
+                <option value="Dining Room">Dining Room</option>
+                <option value="Gardens">Gardens</option>
+                <option value="Graveyard">Graveyard</option>
+                <option value="Junk Room">Junk Room</option>
+                <option value="Kitchen">Kitchen</option>
+                <option value="Library">Library</option>
+            </optgroup>
+            <optgroup label="Piso Superior (Upper Floor)">
+                <option value="Attic">Attic</option>
+                <option value="Balcony">Balcony</option>
+                <option value="Bloody Room">Bloody Room</option>
+                <option value="Chapel">Chapel</option>
+                <option value="Charred Room">Charred Room</option>
+                <option value="Master Bedroom">Master Bedroom</option>
+                <option value="Tower">Tower</option>
+            </optgroup>
+        </select>
+
+        <div class="chips-container" id="container-chips">
+            <!-- Renderizado de Habitaciones -->
+        </div>
+        
+        <!-- RITO DE PURIFICACIÓN -->
+        <div class="purify-box">
+            <b>🔥 Rito de Purificación:</b> Sacrifica 1 Objeto al azar de tu Maletín para purificar la Casona y borrar TODAS las Habitaciones Embrujadas marcadas.
+            <button class="btn-action" onclick="ejecutarPurificacion()" style="background:#b91c1c; border-color:#f87171; margin-top:6px;">Sacrificar Objeto y Purificar</button>
+        </div>
+
+        <div class="legacy-section-title">📜 Lista de Expedientes</div>
+        
+        <div class="bando-selector">
+            <button class="btn-tab" id="tab-heroe" onclick="cambiarBando('heroe')">🛡️ Héroe (50)</button>
+            <button class="btn-tab" id="tab-traitor" onclick="cambiarBando('traidor')">🗡️ Casona (50)</button>
+        </div>
+
+        <div id="lista-expedientes">
+            <!-- Generado dinámicamente -->
+        </div>
+    </div>
+
+<script>
+    let bandoActual = 'heroe';
+    let estadoLegacy = JSON.parse(localStorage.getItem('betrayal_legacy')) || {
+        determinacion: 3,
+        sombra: 0,
+        maletinList: [],
+        marcasList: [],
+        resultadosHeroe: {},
+        resultadosTraidor: {}
+    };
+
+    if (!Array.isArray(estadoLegacy.maletinList)) estadoLegacy.maletinList = [];
+    if (!Array.isArray(estadoLegacy.marcasList)) estadoLegacy.marcasList = [];
+
+    const TITULOS_HAUNTS = {
+        1: "La Momia Camina", 2: "La Sesión de Espiritismo", 3: "Estofado de Ancas de Rana",
+        4: "La Telaraña del Destino", 5: "Licántropo Adolescente", 6: "El Ojo Flotante",
+        7: "Hiedra Carnívora", 8: "El Gemido de la Banshee", 9: "La Danza de la Muerte",
+        10: "Ampliando la Familia", 11: "No les Dejes Entrar", 12: "Masas de Carne Andantes",
+        13: "Tal Vez Soñar", 14: "Las Estrellas lo Saben", 15: "Aquí hay Dragones",
+        16: "El Abrazo del Fantasma", 17: "Bichos", 18: "Los Retoños",
+        19: "El Señor de las Bestias", 20: "La Novia Fantasma", 21: "La Casa de los Muertos Vivientes",
+        22: "El Abismo Devuelve la Mirada", 23: "El Horror Tentaculado", 24: "Vuela de Vuelta a Casa",
+        25: "Muñecos Vudú", 26: "Sufre las Consecuencias", 27: "Carne Enloquecida",
+        28: "El Anillo del Rey Salomón", 29: "El Legado de Frankenstein", 30: "La Tumba de Drácula",
+        31: "El Pájaro de Mal Agüero", 32: "La Caza Salvaje", 33: "El Fantasma de la Ópera",
+        34: "El Rito de Iniciación", 35: "La Casa del Horror", 36: "El Titiritero",
+        37: "La Dimensión Desconocida", 38: "El Horror del Espejo", 39: "La Maldición de la Momia",
+        40: "El Enjambre", 41: "La Invocación del Mal", 42: "El Secreto del Sótano",
+        43: "La Peste Negra", 44: "La Ilusión Fatal", 45: "El Experimento Prohibido",
+        46: "El Despertar del Primigenio", 47: "El Laberinto de Sombras", 48: "El Portal al Infierno",
+        49: "La Molicie de las Almas", 50: "Búsqueda del Tesoro (Escape)"
+    };
+
+    function inicializar() {
+        document.getElementById('val-det').innerText = `${estadoLegacy.determinacion} / 3`;
+        document.getElementById('val-sombra').innerText = estadoLegacy.sombra;
+        actualizarUmbral();
+        renderizarObjetos();
+        renderizarChips();
+        renderizarLista();
+        actualizarLore();
+    }
+
+    function modificarDet(cant) {
+        if (cant === 1) estadoLegacy.determinacion = 3;
+        else estadoLegacy.determinacion = Math.max(0, estadoLegacy.determinacion + cant);
+        document.getElementById('val-det').innerText = `${estadoLegacy.determinacion} / 3`;
+        guardarLegacy();
+    }
+
+    function modificarSombra(cant) {
+        estadoLegacy.sombra = Math.max(0, estadoLegacy.sombra + cant);
+        document.getElementById('val-sombra').innerText = estadoLegacy.sombra;
+        actualizarUmbral();
+        guardarLegacy();
+    }
+
+    function actualizarUmbral() {
+        document.getElementById('val-umbral').innerText = `MENOR A ${estadoLegacy.sombra}`;
+        document.getElementById('text-umbral-num').innerText = estadoLegacy.sombra;
+    }
+
+    function agregarObjetoMaletin(obj) {
+        if (!obj) return;
+        estadoLegacy.maletinList.push(obj);
+        guardarLegacy();
+        renderizarObjetos();
+        document.getElementById('select-maletin').value = '';
+    }
+
+    function removerObjetoMaletin(obj) {
+        const index = estadoLegacy.maletinList.indexOf(obj);
+        if (index > -1) estadoLegacy.maletinList.splice(index, 1);
+        guardarLegacy();
+        renderizarObjetos();
+    }
+
+    function renderizarObjetos() {
+        const cont = document.getElementById('container-objects');
+        cont.innerHTML = '';
+        if (estadoLegacy.maletinList.length === 0) {
+            cont.innerHTML = '<span style="font-size:10px; color:#666; font-style:italic;">El maletín está vacío.</span>';
+            return;
+        }
+        estadoLegacy.maletinList.forEach(obj => {
+            const chip = document.createElement('div');
+            chip.className = 'chip-item';
+            chip.style.background = '#8c6c32';
+            chip.style.color = '#000';
+            chip.innerHTML = `${obj} <span class="chip-remove" style="color:#4a0000;" onclick="removerObjetoMaletin('${obj}')">✖</span>`;
+            cont.appendChild(chip);
+        });
+    }
+
+    function agregarHabitacionEmbrujada(sala) {
+        if (!sala) return;
+        if (!estadoLegacy.marcasList.includes(sala)) {
+            estadoLegacy.marcasList.push(sala);
+            guardarLegacy();
+            renderizarChips();
+        }
+        document.getElementById('select-habitacion').value = '';
+    }
+
+    function removerHabitacionEmbrujada(sala) {
+        estadoLegacy.marcasList = estadoLegacy.marcasList.filter(item => item !== sala);
+        guardarLegacy();
+        renderizarChips();
+    }
+
+    function renderizarChips() {
+        const cont = document.getElementById('container-chips');
+        cont.innerHTML = '';
+        if (estadoLegacy.marcasList.length === 0) {
+            cont.innerHTML = '<span style="font-size:10px; color:#666; font-style:italic;">Sin habitaciones embrujadas.</span>';
+            return;
+        }
+        estadoLegacy.marcasList.forEach(sala => {
+            const chip = document.createElement('div');
+            chip.className = 'chip-item';
+            chip.innerHTML = `${sala} <span class="chip-remove" onclick="removerHabitacionEmbrujada('${sala}')">✖</span>`;
+            cont.appendChild(chip);
+        });
+    }
+
+    function ejecutarPurificacion() {
+        if (estadoLegacy.maletinList.length === 0) {
+            alert("⚠️ No tienes ningún objeto en tu Maletín para ofrecer en sacrificio. ¡El Rito no puede realizarse!");
+            return;
+        }
+
+        if (confirm("¿Deseas realizar el Rito de Purificación? Se destruirá 1 objeto al azar de tu maletín a cambio de limpiar TODAS las habitaciones embrujadas.")) {
+            const randomIndex = Math.floor(Math.random() * estadoLegacy.maletinList.length);
+            const objetoSacrificado = estadoLegacy.maletinList.splice(randomIndex, 1)[0];
+            estadoLegacy.marcasList = [];
+            guardarLegacy();
+            renderizarObjetos();
+            renderizarChips();
+            alert(`🔥 Has consumido [${objetoSacrificado}] en el fuego del altar. La Casona ha sido purificada de todas sus marcas.`);
+        }
+    }
+
+    function cambiarBando(bando) {
+        bandoActual = bando;
+        document.getElementById('tab-heroe').style.background = bando === 'heroe' ? '#0284c7' : '#0f172a';
+        document.getElementById('tab-traitor').style.background = bando === 'traidor' ? '#8b0000' : '#0f172a';
+        renderizarLista();
+    }
+
+    function renderizarLista() {
+        const cont = document.getElementById('lista-expedientes');
+        cont.innerHTML = '';
+        const dictResultados = bandoActual === 'heroe' ? estadoLegacy.resultadosHeroe : estadoLegacy.resultadosTraidor;
+
+        for (let i = 1; i <= 50; i++) {
+            const res = dictResultados[i] || 'pendiente';
+            const item = document.createElement('div');
+            item.className = 'expediente-item';
+            
+            let badgeClass = 'status-pending';
+            let badgeText = 'Pendiente';
+            if (res === 'win') { badgeClass = 'status-win'; badgeText = 'Victoria'; }
+            if (res === 'loss') { badgeClass = 'status-loss'; badgeText = 'Derrota'; }
+
+            item.innerHTML = `
+                <div class="expediente-info">
+                    <div class="expediente-title">#${i}: ${TITULOS_HAUNTS[i]}</div>
+                    <a href="${bandoActual === 'heroe' ? 'supervivientes.html' : 'traidor.html'}" style="color:#7a2810; font-size:10px;">Ver Tomo Digital ➔</a>
+                </div>
+                <div>
+                    <span class="status-badge ${badgeClass}">${badgeText}</span>
+                    <button style="font-size:9px; cursor:pointer;" onclick="toggleResultado(${i})">✏️</button>
+                </div>
+            `;
+            cont.appendChild(item);
+        }
+    }
+
+    function toggleResultado(id) {
+        const dict = bandoActual === 'heroe' ? estadoLegacy.resultadosHeroe : estadoLegacy.resultadosTraidor;
+        const actual = dict[id] || 'pendiente';
+        if (actual === 'pendiente') dict[id] = 'win';
+        else if (actual === 'win') dict[id] = 'loss';
+        else dict[id] = 'pendiente';
+        
+        guardarLegacy();
+        renderizarLista();
+        actualizarLore();
+    }
+
+    function actualizarLore() {
+        const victoriasHeroe = Object.values(estadoLegacy.resultadosHeroe).filter(v => v === 'win').length;
+        const victoriasTraidor = Object.values(estadoLegacy.resultadosTraidor).filter(v => v === 'win').length;
+        const totalWins = victoriasHeroe + victoriasTraidor;
+
+        const boxTitle = document.getElementById('lore-title');
+        const boxText = document.getElementById('lore-text');
+
+        if (totalWins === 0) {
+            boxTitle.innerText = "Fragmento I: La Llegada";
+            boxText.innerHTML = "<i>'Las maderas crujen bajo tus pasos. La casa está despierta, pero sus intenciones siguen ocultas...'</i>";
+        } else if (totalWins < 5) {
+            boxTitle.innerText = "Fragmento II: Primeros Resplandores";
+            boxText.innerHTML = "<i>'Has sobrevivido a las primeras sombras. Comprendes que los pasillos no corresponden a ningún plano arquitectónico humano...'</i>";
+        } else if (totalWins < 15) {
+            boxTitle.innerText = "Fragmento III: La Maldición de 1890";
+            boxText.innerHTML = "<i>'Los diarios encontrados en el sótano revelan que la Casona fue erigida sobre una brecha dimensional por el culto de los Mapeados...'</i>";
+        } else if (totalWins < 30) {
+            boxTitle.innerText = "Fragmento IV: El Despertar de la Casona";
+            boxText.innerHTML = "<i>'Las barreras entre misiones se disuelven. Comprendes que cada victoria debilita el velo, mientras que cada derrota nutre a la Casona.'</i>";
+        } else {
+            boxTitle.innerText = "Fragmento V: El Clímax del Conocimiento";
+            boxText.innerHTML = "<i>'Te acercas a la verdad absoluta. La Casona y tú están unidos para siempre en un ciclo infinito de expedientes.'</i>";
+        }
+    }
+
+    function guardarLegacy() {
+        localStorage.setItem('betrayal_legacy', JSON.stringify(estadoLegacy));
+    }
+
+    window.onload = inicializar;
+</script>
+</body>
+</html>
